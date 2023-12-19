@@ -1,8 +1,31 @@
 import { Box, Typography, Button, Sheet } from "@mui/joy";
-import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
+import { useEffect } from "react";
 
 export default function Navigation() {
+  const { isSignedIn } = useAuth();
+
+  const fetchUser = async () => {
+    const currentUser = await fetch("/api/user", {
+      method: "GET",
+    });
+
+    if (!currentUser) {
+      throw new Error("Something went wrong");
+    }
+
+    const getCurrent = await currentUser.json();
+
+    console.log(getCurrent, "...user data");
+  };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchUser();
+    }
+  }, [isSignedIn]);
+  
   return (
     <Sheet
       variant="outlined"
