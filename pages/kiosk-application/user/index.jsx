@@ -6,7 +6,7 @@ export default function UserKioskApplicationPage() {
 
   useEffect(() => {
     router.push("/kiosk-application/user/view-application/");
-  }, []);
+  }, [router]);
 
   return null;
 }

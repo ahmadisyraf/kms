@@ -7,15 +7,11 @@ import {
   Input,
   FormControl,
   FormLabel,
-  FormHelperText,
   Stack,
   Button,
   Sheet,
-  styled,
-  SvgIcon,
-  Select,
-  Option,
   AspectRatio,
+  CircularProgress,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
 import Link from "next/link";
@@ -23,21 +19,8 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
-import toast from "react-hot-toast";
 import { useRouter } from "next/router";
-
-const VisuallyHiddenInput = styled("input")`
-  clip: rect(0 0 0 0);
-  clip-path: inset(50%);
-  height: 1px;
-  overflow: hidden;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  white-space: nowrap;
-  width: 1px;
-`;
+import Loader from "@/components/Loader";
 
 const schema = yup.object({
   inputOwnerName: yup.string().required("Owner name is required"),
@@ -66,7 +49,6 @@ const breadcrumbs = [
 
 export default function ApplyKioskPage() {
   const {
-    register,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -76,8 +58,10 @@ export default function ApplyKioskPage() {
   const router = useRouter();
   const applicationId = router.query.id;
   const [application, setApplications] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchApplications = async () => {
+    setIsLoading(true);
     try {
       const applications = await fetch(
         `/api/application/${applicationId}?type=application`,
@@ -92,11 +76,11 @@ export default function ApplyKioskPage() {
 
       const data = await applications.json();
 
-      console.log(data, "...application");
-
       setApplications(data);
+      setIsLoading(false);
     } catch (error) {
       console.error(error);
+      setIsLoading(false);
     }
   };
 
@@ -132,75 +116,82 @@ export default function ApplyKioskPage() {
           component={"form"}
           onSubmit={handleSubmit(onSubmit)}
         >
-          <Stack direction={"column"} spacing={2}>
-            <FormControl error={errors.inputOwnerName ? true : false}>
-              <FormLabel>Owner name:</FormLabel>
-              <Input readOnly value={application?.owner.name} />
-            </FormControl>
-            <FormControl error={errors?.inputOwnerIC}>
-              <FormLabel>Owner IC:</FormLabel>
-              <Input readOnly value={application?.owner.ic} />
-            </FormControl>
-            <FormControl error={errors?.inputImage}>
-              <FormLabel>Owner IC image:</FormLabel>
-              <Sheet
-                variant="outlined"
-                sx={{
-                  py: 2,
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  borderRadius: 10,
-                }}
-              >
-                <AspectRatio
+          {isLoading ? (
+            <Loader />
+          ) : (
+            <Stack direction={"column"} spacing={2}>
+              <FormControl error={errors.inputOwnerName ? true : false}>
+                <FormLabel>Owner name:</FormLabel>
+                <Input readOnly value={application?.owner.name} />
+              </FormControl>
+              <FormControl error={errors?.inputOwnerIC}>
+                <FormLabel>Owner IC:</FormLabel>
+                <Input readOnly value={application?.owner.ic} />
+              </FormControl>
+              <FormControl error={errors?.inputImage}>
+                <FormLabel>Owner IC image:</FormLabel>
+                <Sheet
                   variant="outlined"
-                  ratio="1"
-                  objectFit="cover"
-                  sx={{ width: 200, borderRadius: 15 }}
+                  sx={{
+                    py: 2,
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    borderRadius: 10,
+                  }}
                 >
-                  <img
-                    src={application?.owner.icImage}
-                    alt="user ic"
-                    loading="lazy"
-                  />
-                </AspectRatio>
-              </Sheet>
-            </FormControl>
-            <FormControl error={errors?.inputPhoneNumber}>
-              <FormLabel>Owner phone number:</FormLabel>
-              <Input
-                startDecorator="+60"
-                readOnly
-                value={application?.owner.phoneNo}
-              />
-            </FormControl>
-            <FormControl error={errors?.inputOwnerAddress}>
-              <FormLabel>Owner mailing address:</FormLabel>
-              <Input readOnly value={application?.owner.address} />
-            </FormControl>
-            <FormControl error={errors?.inputBusinessName}>
-              <FormLabel>Business name:</FormLabel>
-              <Input readOnly value={application?.business.name} />
-            </FormControl>
-            <FormControl error={errors?.inputBusinessSSM}>
-              <FormLabel>Business SSM:</FormLabel>
-              <Input readOnly value={application?.business.phoneNo} />
-            </FormControl>
-            <FormControl error={errors?.inputBusinessPhoneNumber}>
-              <FormLabel>Business phone number:</FormLabel>
-              <Input
-                startDecorator="+60"
-                readOnly
-                value={application?.business.phoneNo}
-              />
-            </FormControl>
-            <FormControl error={errors?.inputTyphoidInjection}>
-              <FormLabel>Typhoid Injection:</FormLabel>
-              <Input readOnly value={application?.business.typhoidInjection} />
-            </FormControl>
-            <Button type="submit">Submit</Button>
-          </Stack>
+                  <AspectRatio
+                    variant="outlined"
+                    ratio="1"
+                    objectFit="cover"
+                    sx={{ width: 200, borderRadius: 15 }}
+                  >
+                    <img
+                      src={application?.owner.icImage}
+                      alt="user ic"
+                      loading="lazy"
+                    />
+                  </AspectRatio>
+                </Sheet>
+              </FormControl>
+              <FormControl error={errors?.inputPhoneNumber}>
+                <FormLabel>Owner phone number:</FormLabel>
+                <Input
+                  startDecorator="+60"
+                  readOnly
+                  value={application?.owner.phoneNo}
+                />
+              </FormControl>
+              <FormControl error={errors?.inputOwnerAddress}>
+                <FormLabel>Owner mailing address:</FormLabel>
+                <Input readOnly value={application?.owner.address} />
+              </FormControl>
+              <FormControl error={errors?.inputBusinessName}>
+                <FormLabel>Business name:</FormLabel>
+                <Input readOnly value={application?.business.name} />
+              </FormControl>
+              <FormControl error={errors?.inputBusinessSSM}>
+                <FormLabel>Business SSM:</FormLabel>
+                <Input readOnly value={application?.business.phoneNo} />
+              </FormControl>
+              <FormControl error={errors?.inputBusinessPhoneNumber}>
+                <FormLabel>Business phone number:</FormLabel>
+                <Input
+                  startDecorator="+60"
+                  readOnly
+                  value={application?.business.phoneNo}
+                />
+              </FormControl>
+              <FormControl error={errors?.inputTyphoidInjection}>
+                <FormLabel>Typhoid Injection:</FormLabel>
+                <Input
+                  readOnly
+                  value={application?.business.typhoidInjection}
+                />
+              </FormControl>
+              <Button type="submit">Submit</Button>
+            </Stack>
+          )}
         </Card>
       </Box>
     </DashboardLayout>

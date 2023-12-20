@@ -27,7 +27,12 @@ export default function DashboardLayout({ children }) {
           }}
         >
           <Sheet
-            sx={{ p: 3, flexGrow: 1, bgcolor: "background.default" }}
+            sx={{
+              p: 3,
+              flexGrow: 1,
+              bgcolor: "background.default",
+              height: "100vh",
+            }}
             variant="soft"
           >
             {children}

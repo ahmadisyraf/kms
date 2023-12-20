@@ -2,6 +2,7 @@ import { Box, Typography, Button, Sheet } from "@mui/joy";
 import { UserButton, SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect } from "react";
+import { IoMenu } from "react-icons/io5";
 
 export default function Navigation() {
   const { isSignedIn } = useAuth();
@@ -40,9 +41,18 @@ export default function Navigation() {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Link href={"/"}>
-          <Typography level="h4">KioskMS</Typography>
-        </Link>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          {/* <Button
+            variant="outlined"
+            color="neutral"
+            sx={{ mr: 1, width: 40, px: 0 }}
+          >
+            <IoMenu size={23} />
+          </Button> */}
+          <Link href={"/"}>
+            <Typography level="h4">KioskMS</Typography>
+          </Link>
+        </Box>
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>

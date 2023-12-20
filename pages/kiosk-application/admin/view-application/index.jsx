@@ -2,11 +2,9 @@ import DashboardLayout from "@/layouts/dashboard";
 import {
   Box,
   Breadcrumbs,
-  Button,
   Sheet,
   Typography,
-  Table,
-  Tooltip,
+  CircularProgress,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
 import Link from "next/link";
@@ -19,15 +17,22 @@ const Lottie = dynamic(
   }
 );
 import animation from "../../../../public/empty.json";
-import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+const ApplicationTable = dynamic(
+  () =>
+    import(
+      "@/screens/kiosk-application/admin/view-application/application-table"
+    ),
+  { ssr: false, loading: () => <p>Loading...</p> }
+);
+import Loader from "@/components/Loader";
 
 export default function ViewApplicationPage() {
   const [applications, setApplications] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchApplications = async () => {
-
+    setIsLoading(true);
     const applications = await fetch(`/api/application`, {
       method: "GET",
     });
@@ -38,10 +43,8 @@ export default function ViewApplicationPage() {
 
     const data = await applications.json();
 
-    console.log(data, "...application");
-
     setApplications(data);
-
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -86,84 +89,20 @@ export default function ViewApplicationPage() {
               justifyContent: "center",
             }}
           >
-            {applications && applications.length > 0 ? (
-              <Table
-                aria-label="basic table"
-                borderAxis="xBetween"
-                size="md"
-                stickyFooter={false}
-                stickyHeader={false}
-                variant="plain"
-              >
-                <thead>
-                  <tr>
-                    <th style={{ width: "40%" }}>Business</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                    <th>Created Date</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {applications?.map((d, index) => (
-                    <tr key={index}>
-                      <td>
-                        <Box>
-                          <Typography level="title-sm">
-                            {d.business.name}
-                          </Typography>
-                          <Typography level="body-xs">{`SSM: ${d.business.ssmNo}`}</Typography>
-                        </Box>
-                      </td>
-                      <td>
-                        <Typography level="title-sm" color="neutral">
-                          {`+60${d.business.phoneNo}`}
-                        </Typography>
-                      </td>
-                      <td>
-                        <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <Sheet
-                            variant="solid"
-                            color="primary"
-                            sx={{
-                              width: "fit-content",
-                              color: "white",
-                              px: 1,
-                              py: 0.1,
-                              borderRadius: 20,
-                              display: "flex",
-                              alignItems: "center",
-                              mr: 1,
-                            }}
-                          >
-                            <Typography level="title-sm" color="white">
-                              {d.status ? d.status : "Pending"}
-                            </Typography>
-                          </Sheet>
-                        </Box>
-                      </td>
-                      <td>
-                        <Typography level="title-sm" color="neutral">
-                          {new Date(d.createdDate).toLocaleDateString()}
-                        </Typography>
-                      </td>
-                      <td>
-                        <Link
-                          href={`/kiosk-application/admin/view-application/${d.id}`}
-                        >
-                          <Button variant="plain">View</Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+            {isLoading ? (
+              <Loader />
             ) : (
-              <Box sx={{ position: "relative", width: 300 }}>
-                <Lottie animationData={animation} loop={true} />
-                <Typography level="h3" textAlign={"center"}>
-                  No application found
-                </Typography>
+              <Box>
+                {applications && applications.length > 0 ? (
+                  <ApplicationTable applications={applications} />
+                ) : (
+                  <Box sx={{ position: "relative", width: 300 }}>
+                    <Lottie animationData={animation} loop={true} />
+                    <Typography level="h3" textAlign={"center"}>
+                      No application found
+                    </Typography>
+                  </Box>
+                )}
               </Box>
             )}
           </Sheet>

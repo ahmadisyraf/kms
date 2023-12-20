@@ -6,7 +6,7 @@ export default function AdminKioskApplicationPage() {
 
   useEffect(() => {
     router.push("/kiosk-application/admin/view-application/");
-  }, []);
+  }, [router]); 
 
   return null;
 }

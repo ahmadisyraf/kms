@@ -1,7 +1,6 @@
 import DashboardLayout from "@/layouts/dashboard";
 import {
   Box,
-  Breadcrumbs,
   Card,
   Typography,
   Input,
@@ -17,8 +16,6 @@ import {
   Option,
   AspectRatio,
 } from "@mui/joy";
-import { IoIosArrowForward } from "react-icons/io";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -27,6 +24,11 @@ import Compressor from "compressorjs";
 import { useAuth } from "@clerk/nextjs";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
+const CustomBreadcrumbs = dynamic(
+  () => import("@/components/CustomBreadcrumbs"),
+  { ssr: true, loading: () => <p>Loading...</p> }
+);
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -179,17 +181,7 @@ export default function ApplyKioskPage() {
   return (
     <DashboardLayout>
       <Box sx={{ mt: 10 }}>
-        <Breadcrumbs
-          separator={<IoIosArrowForward />}
-          aria-label="breadcrumbs"
-          sx={{ px: 0 }}
-        >
-          {breadcrumbs.map((item, index) => (
-            <Link key={index} color="neutral" href={item.link}>
-              {item.name}
-            </Link>
-          ))}
-        </Breadcrumbs>
+        <CustomBreadcrumbs breadcrumbs={breadcrumbs} />
 
         <Typography level="h2">New application</Typography>
 

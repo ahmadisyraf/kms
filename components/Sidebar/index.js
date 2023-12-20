@@ -27,6 +27,14 @@ const navigations = [
   },
 ];
 
+const protectedNavigation = [
+  {
+    name: "Kiosk application",
+    icon: <FaShop size={18} />,
+    url: "/kiosk-application/admin/view-application",
+  },
+];
+
 export default function Sidebar() {
   const router = useRouter();
 
@@ -66,12 +74,17 @@ export default function Sidebar() {
           <Divider />
         </Stack>
       </List>
-      <Typography level="body-xs" color="neutral" textTransform={"uppercase"} mt={2}>
+      <Typography
+        level="body-xs"
+        color="neutral"
+        textTransform={"uppercase"}
+        mt={2}
+      >
         ADMIN PANEL
       </Typography>
       <List size="md" sx={{ mt: 2 }}>
         <Stack direction={"column"} spacing={1}>
-          {navigations.map((nav, index) => (
+          {protectedNavigation.map((nav, index) => (
             <Link href={nav.url} key={index}>
               <ListItem>
                 <ListItemButton
