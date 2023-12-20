@@ -12,7 +12,7 @@ export default function Loader() {
     >
       <CircularProgress color="primary" determinate={false} variant="soft" />
       <Typography level="body-md" mt={2}>
-        It&rsquo;ll just take a momment, please wait.
+        It&apos;ll just take a momment, please wait.
       </Typography>
     </Box>
   );
