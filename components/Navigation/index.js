@@ -7,7 +7,7 @@ export default function Navigation() {
   const { isSignedIn } = useAuth();
 
   const fetchUser = async () => {
-    const currentUser = await fetch("/api/user", {
+    const currentUser = await fetch("/api/user/", {
       method: "GET",
     });
 
@@ -25,7 +25,7 @@ export default function Navigation() {
       fetchUser();
     }
   }, [isSignedIn]);
-  
+
   return (
     <Sheet
       variant="outlined"

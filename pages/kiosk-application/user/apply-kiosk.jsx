@@ -15,12 +15,18 @@ import {
   SvgIcon,
   Select,
   Option,
+  AspectRatio,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useState } from "react";
+import Compressor from "compressorjs";
+import { useAuth } from "@clerk/nextjs";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
 
 const VisuallyHiddenInput = styled("input")`
   clip: rect(0 0 0 0);
@@ -45,16 +51,19 @@ const schema = yup.object({
     .string()
     .required("Business phone number is required"),
   inputTyphoidInjection: yup.string().required("Typhoid Injection is required"),
-  inputImage: yup
-    .mixed()
-    .required("Image is required")
-    .test("fileSize", "File size is too large", (value) => {
-      return value && value[0] && value[0].size <= 10 * 1024 * 1024;
-    })
-    .test("fileType", "Invalid file type", (value) => {
-      return value && value[0] && /^image\/(jpeg|png)$/.test(value[0].type);
-    }),
 });
+
+const breadcrumbs = [
+  {
+    name: "Dashboard",
+    link: "/kiosk-application/user",
+  },
+  { name: "Kiosk application", link: "/kiosk-application/user" },
+  {
+    name: "New application",
+    link: "/kiosk-application/user/apply-application",
+  },
+];
 
 export default function ApplyKioskPage() {
   const {
@@ -65,7 +74,107 @@ export default function ApplyKioskPage() {
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => console.log(data);
+  const [file, setFile] = useState(null);
+  const [filename, setFilename] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { userId } = useAuth();
+  const router = useRouter();
+
+  const handleFileChange = async (event) => {
+    const image = event.target.files[0];
+
+    setFilename(image.name);
+
+    try {
+      const compressedBlob = await new Promise((resolve, reject) => {
+        new Compressor(image, {
+          quality: 0.8,
+          mimeType: "image/jpeg",
+          success(result) {
+            resolve(result);
+          },
+          error(error) {
+            reject(error);
+          },
+        });
+      });
+
+      setFile(compressedBlob);
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
+
+  const onSubmit = async (data, event) => {
+    event.preventDefault();
+
+    setIsLoading(true);
+    const loadingToast = toast.loading("Saving, please wait..");
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "gdena9lv");
+
+    try {
+      const uploadImage = await fetch(
+        "https://api.cloudinary.com/v1_1/ds7skkfym/image/upload",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!uploadImage.ok) {
+        throw new Error("Image can't be upload");
+      }
+
+      const image = await uploadImage.json();
+
+      const currentDate = new Date();
+
+      const obj = {
+        inputOwnerName: data.inputOwnerName,
+        inputOwnerIC: data.inputOwnerIC,
+        inputOwnerPhoneNumber: data.inputPhoneNumber,
+        inputOwnerAddress: data.inputOwnerAddress,
+        inputBusinessName: data.inputBusinessName,
+        inputBusinessPhoneNumber: data.inputBusinessPhoneNumber,
+        inputTyphoidInjection: data.inputTyphoidInjection,
+        inputImage: image.secure_url,
+        inputBusinessSSM: data.inputBusinessSSM,
+        inputCreatedDate: currentDate,
+      };
+
+      const createApplication = await fetch(`/api/application/${userId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(obj),
+      });
+
+      if (!createApplication) {
+        toast.error("Something went worng!", { id: loadingToast });
+      }
+
+      const applicationData = await createApplication.json();
+
+      if (!applicationData) {
+        toast.error("Something went wrong", { id: loadingToast });
+      }
+
+      toast.success("Application saved!", { id: loadingToast });
+
+      router.push("/kiosk-application/user/");
+    } catch (error) {
+      toast.error("Please check internet connection, or contact our support", {
+        id: loadingToast,
+      });
+      console.log(error);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -75,9 +184,9 @@ export default function ApplyKioskPage() {
           aria-label="breadcrumbs"
           sx={{ px: 0 }}
         >
-          {["Dashboard", "Kiosk application", "New application"].map((item) => (
-            <Link key={item} color="neutral" href="#separators">
-              {item}
+          {breadcrumbs.map((item, index) => (
+            <Link key={index} color="neutral" href={item.link}>
+              {item.name}
             </Link>
           ))}
         </Breadcrumbs>
@@ -97,6 +206,7 @@ export default function ApplyKioskPage() {
               <Input
                 placeholder="example: john doe"
                 {...register("inputOwnerName")}
+                disabled={isLoading}
               />
               <FormHelperText>{errors?.inputOwnerName?.message}</FormHelperText>
             </FormControl>
@@ -105,6 +215,7 @@ export default function ApplyKioskPage() {
               <Input
                 placeholder="example: 01234-56-78910"
                 {...register("inputOwnerIC")}
+                disabled={isLoading}
               />
               <FormHelperText>{errors?.inputOwnerIC?.message}</FormHelperText>
             </FormControl>
@@ -120,45 +231,64 @@ export default function ApplyKioskPage() {
                   borderRadius: 10,
                 }}
               >
-                <Button
-                  component="label"
-                  role={undefined}
-                  tabIndex={-1}
-                  variant="outlined"
-                  color="neutral"
-                  startDecorator={
-                    <SvgIcon>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={1.5}
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
-                        />
-                      </svg>
-                    </SvgIcon>
-                  }
-                >
-                  Upload a file
-                  <VisuallyHiddenInput
-                    type="file"
-                    accept="image/jpeg, image/png"
-                  />
-                </Button>
+                {file ? (
+                  <AspectRatio
+                    variant="outlined"
+                    ratio="1"
+                    objectFit="cover"
+                    sx={{ width: 200, borderRadius: 15 }}
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="user ic"
+                      loading="lazy"
+                    />
+                  </AspectRatio>
+                ) : (
+                  <Button
+                    component="label"
+                    role={undefined}
+                    tabIndex={-1}
+                    variant="outlined"
+                    color="neutral"
+                    disabled={isLoading}
+                    startDecorator={
+                      <SvgIcon>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                          />
+                        </svg>
+                      </SvgIcon>
+                    }
+                  >
+                    Upload a file
+                    <VisuallyHiddenInput
+                      type="file"
+                      accept="image/jpeg, image/png"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                )}
               </Sheet>
               <FormHelperText>{errors?.inputImage?.message}</FormHelperText>
+              <Typography>{filename}</Typography>
             </FormControl>
             <FormControl error={errors?.inputPhoneNumber}>
               <FormLabel>Owner phone number:</FormLabel>
               <Input
                 placeholder="example: 013456789"
-                startDecorator="+601"
+                startDecorator="+60"
                 {...register("inputPhoneNumber")}
+                disabled={isLoading}
               />
               <FormHelperText>
                 {errors?.inputPhoneNumber?.message}
@@ -169,6 +299,7 @@ export default function ApplyKioskPage() {
               <Input
                 placeholder="example: NO7 Jalan Bunian 25200 Bunian"
                 {...register("inputOwnerAddress")}
+                disabled={isLoading}
               />
               <FormHelperText>
                 {errors?.inputOwnerAddress?.message}
@@ -179,6 +310,7 @@ export default function ApplyKioskPage() {
               <Input
                 placeholder="example: Megah holding sdn bhd"
                 {...register("inputBusinessName")}
+                disabled={isLoading}
               />
               <FormHelperText>
                 {errors?.inputBusinessName?.message}
@@ -189,6 +321,7 @@ export default function ApplyKioskPage() {
               <Input
                 placeholder="example: 123456789"
                 {...register("inputBusinessSSM")}
+                disabled={isLoading}
               />
               <FormHelperText>
                 {errors?.inputBusinessSSM?.message}
@@ -198,8 +331,9 @@ export default function ApplyKioskPage() {
               <FormLabel>Business phone number:</FormLabel>
               <Input
                 placeholder="example: 013456789"
-                startDecorator="+601"
+                startDecorator="+60"
                 {...register("inputBusinessPhoneNumber")}
+                disabled={isLoading}
               />
               <FormHelperText>
                 {errors?.inputBusinessPhoneNumber?.message}
@@ -210,15 +344,18 @@ export default function ApplyKioskPage() {
               <Select
                 placeholder="Choose one…"
                 {...register("inputTyphoidInjection")}
+                disabled={isLoading}
               >
-                <Option value={"No"}>No</Option>
-                <Option value={"Yes"}>Yes</Option>
+                <Option value={false}>No</Option>
+                <Option value={true}>Yes</Option>
               </Select>
               <FormHelperText>
                 {errors?.inputTyphoidInjection?.message}
               </FormHelperText>
             </FormControl>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled={isLoading}>
+              Submit
+            </Button>
           </Stack>
         </Card>
       </Box>

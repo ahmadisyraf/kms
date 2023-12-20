@@ -9,7 +9,6 @@ import {
   Tooltip,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
-import { IoIosAdd } from "react-icons/io";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 const Lottie = dynamic(
@@ -19,17 +18,17 @@ const Lottie = dynamic(
     loading: () => <p>Loading...</p>,
   }
 );
-import animation from "../../../public/empty.json";
+import animation from "../../../../public/empty.json";
 import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import { FaCircleInfo } from "react-icons/fa6";
+import toast from "react-hot-toast";
 
 export default function ViewApplicationPage() {
   const [applications, setApplications] = useState();
-  const { userId } = useAuth();
 
   const fetchApplications = async () => {
-    const applications = await fetch(`/api/application/${userId}`, {
+
+    const applications = await fetch(`/api/application`, {
       method: "GET",
     });
 
@@ -42,22 +41,19 @@ export default function ViewApplicationPage() {
     console.log(data, "...application");
 
     setApplications(data);
+
   };
 
   useEffect(() => {
     fetchApplications();
-  }, [userId]);
+  }, []);
 
   const breadcrumbs = [
     {
       name: "Dashboard",
-      link: "/kiosk-application/user",
+      link: "/kiosk-application/admin",
     },
-    { name: "Kiosk application", link: "/kiosk-application/user" },
-    // {
-    //   name: "New application",
-    //   link: "/kiosk-application/user/apply-application",
-    // },
+    { name: "Kiosk application", link: "/kiosk-application/admin" },
   ];
 
   return (
@@ -78,13 +74,6 @@ export default function ViewApplicationPage() {
         <Typography level="h2">Kiosk application</Typography>
 
         <Box sx={{ mt: 5 }}>
-          <Box sx={{ display: "flex", flexDirection: "row-reverse" }}>
-            <Link href={"/kiosk-application/user/apply-kiosk"}>
-              <Button sx={{ mr: 1 }} startDecorator={<IoIosAdd size={20} />}>
-                New application
-              </Button>
-            </Link>
-          </Box>
           <Sheet
             variant="outlined"
             sx={{
@@ -112,6 +101,7 @@ export default function ViewApplicationPage() {
                     <th>Phone</th>
                     <th>Status</th>
                     <th>Created Date</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -150,21 +140,19 @@ export default function ViewApplicationPage() {
                               {d.status ? d.status : "Pending"}
                             </Typography>
                           </Sheet>
-                          {/* <Tooltip
-                            title="Delete"
-                            variant="solid"
-                            placement="bottom"
-                          >
-                            <Box>
-                              <FaCircleInfo size={15} />
-                            </Box>
-                          </Tooltip> */}
                         </Box>
                       </td>
                       <td>
                         <Typography level="title-sm" color="neutral">
                           {new Date(d.createdDate).toLocaleDateString()}
                         </Typography>
+                      </td>
+                      <td>
+                        <Link
+                          href={`/kiosk-application/admin/view-application/${d.id}`}
+                        >
+                          <Button variant="plain">View</Button>
+                        </Link>
                       </td>
                     </tr>
                   ))}

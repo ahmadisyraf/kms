@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Box, Button, Grid, Stack, Typography } from "@mui/joy";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
@@ -55,18 +54,11 @@ export default function Home() {
                   cutting-edge system.
                 </Typography>
                 <Box pt={3}>
-                  <SignedOut>
+                  <Link href={"/kiosk-application/user/view-application"}>
                     <Button variant="solid" size="lg">
-                      Get Started
+                      Go to dashboard
                     </Button>
-                  </SignedOut>
-                  <SignedIn>
-                    <Link href={"/kiosk-application/user/view-application"}>
-                      <Button variant="solid" size="lg">
-                        Go to dashboard
-                      </Button>
-                    </Link>
-                  </SignedIn>
+                  </Link>
                 </Box>
               </Stack>
             </Box>

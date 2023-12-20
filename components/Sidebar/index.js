@@ -7,6 +7,7 @@ import {
   ListItemDecorator,
   Stack,
   Typography,
+  Divider,
 } from "@mui/joy";
 import Link from "next/link";
 import { FaShop } from "react-icons/fa6";
@@ -44,6 +45,29 @@ export default function Sidebar() {
     >
       <Typography level="body-xs" color="neutral" textTransform={"uppercase"}>
         Dashboard
+      </Typography>
+      <List size="md" sx={{ mt: 2 }}>
+        <Stack direction={"column"} spacing={1}>
+          {navigations.map((nav, index) => (
+            <Link href={nav.url} key={index}>
+              <ListItem>
+                <ListItemButton
+                  variant="plain"
+                  color="primary"
+                  selected={router.pathname === nav.url}
+                  sx={{ borderRadius: 10, py: 1 }}
+                >
+                  <ListItemDecorator>{nav.icon}</ListItemDecorator>
+                  <ListItemContent>{nav.name}</ListItemContent>
+                </ListItemButton>
+              </ListItem>
+            </Link>
+          ))}
+          <Divider />
+        </Stack>
+      </List>
+      <Typography level="body-xs" color="neutral" textTransform={"uppercase"} mt={2}>
+        ADMIN PANEL
       </Typography>
       <List size="md" sx={{ mt: 2 }}>
         <Stack direction={"column"} spacing={1}>
