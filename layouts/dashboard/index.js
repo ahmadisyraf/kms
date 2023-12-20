@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }) {
               flexGrow: 1,
               bgcolor: "background.default",
               height: "100vh",
-              pb: 10,
+              position: "relative",
             }}
             variant="soft"
           >

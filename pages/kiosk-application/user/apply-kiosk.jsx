@@ -180,7 +180,7 @@ export default function ApplyKioskPage() {
 
   return (
     <DashboardLayout>
-      <Box sx={{ mt: 10 }}>
+      <Box sx={{ py: 10 }}>
         <CustomBreadcrumbs breadcrumbs={breadcrumbs} />
 
         <Typography level="h2">New application</Typography>
