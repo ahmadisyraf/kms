@@ -12,34 +12,31 @@ import {
   Link,
  
 } from "@mui/joy";
-import Lottie from "lottie-react";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
+import dynamic from "next/dynamic";
+
+const Lottie = dynamic(
+  () => import("lottie-react").then((module) => module.default),
+  {
+    ssr: false,
+    loading: () => <p>Loading...</p>,
+  }
+);
 import animation from "../public/landing-page.json";
-import { LuBadgePercent } from "react-icons/lu";
-import * as React from "react";
 
 export default function Home() {
   return (
     <>
-      <Box py={10} px={20}>
-        {/* <Box textAlign={"center"} py={15}>
-          <Stack direction={"column"} spacing={1}>
-            <Typography level="h1" color="primary">
-              Make kiosk registration easy and fast with us
-            </Typography>
-            <Typography>
-              Experience seamless and swift kiosk registration with our
-              cutting-edge system.
-            </Typography>
-            <Box pt={3}>
-              <Button variant="solid">Get Started</Button>
-            </Box>
-          </Stack>
-        </Box> */}
+      <Box
+        py={{ xs: 15, sm: 15, md: 10, lg: 10 }}
+        px={{ xs: 5, md: 10, lg: 20 }}
+      >
         <Grid
           container
           alignItems={"center"}
           justifyContent={"center"}
           direction={"row"}
+          spacing={5}
         >
           <Grid md={6}>
             <Box
@@ -47,8 +44,21 @@ export default function Home() {
                 width: "100%",
               }}
             >
-              <Stack direction={"column"} spacing={1}>
-                <Typography level="h1" color="primary" fontSize={55}>
+              <Stack
+                direction={"column"}
+                spacing={1}
+                textAlign={{
+                  xs: "center",
+                  sm: "center",
+                  md: "left",
+                  lg: "left",
+                }}
+              >
+                <Typography
+                  level="h1"
+                  color="primary"
+                  fontSize={{ xs: 50, sm: 50, md: 55, lg: 55 }}
+                >
                   Make kiosk registration easy, fast and secure with us.
                 </Typography>
                 <Typography level="body-lg">
@@ -56,9 +66,11 @@ export default function Home() {
                   cutting-edge system.
                 </Typography>
                 <Box pt={3}>
-                  <Button variant="solid" size="lg">
-                    Get Started
-                  </Button>
+                  <Link href={"/kiosk-application/user/view-application"}>
+                    <Button variant="solid" size="lg">
+                      Go to dashboard
+                    </Button>
+                  </Link>
                 </Box>
               </Stack>
             </Box>
