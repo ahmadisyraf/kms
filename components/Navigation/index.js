@@ -7,7 +7,7 @@ export default function Navigation() {
     <Sheet
       variant="outlined"
       color="neutral"
-      sx={{ position: "fixed", width: "100%", zIndex: 1000 }}
+      sx={{ position: "fixed", width: "100%", zIndex: 1000 , top:0}}
     >
       <Box
         py={2}

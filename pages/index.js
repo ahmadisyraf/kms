@@ -1,6 +1,21 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Button,
+  Grid,
+  Stack,
+  Typography,
+  AspectRatio,
+  Card,
+  CardContent,
+  CardOverflow,
+  Chip,
+  Link,
+ 
+} from "@mui/joy";
 import Lottie from "lottie-react";
 import animation from "../public/landing-page.json";
+import { LuBadgePercent } from "react-icons/lu";
+import * as React from "react";
 
 export default function Home() {
   return (
@@ -63,6 +78,66 @@ export default function Home() {
             </Box>
           </Grid>
         </Grid>
+        <Box
+          sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+        >
+          <Typography level="h1" color="black" fontSize={35} sx={{ mr: 1 }}>
+            Petakom Kiosk
+            <Typography
+              level="h1"
+              color="primary"
+              fontSize={35}
+              sx={{ ml: 1.2 }}
+            >
+              Hot Promotion
+            </Typography>
+          </Typography>
+
+          <LuBadgePercent size={25} />
+        </Box><Card sx={{ width: 320, maxWidth: '100%', boxShadow: 'lg', mt:5}}>
+      <CardOverflow>
+        <AspectRatio sx={{ minWidth: 200 }}>
+          <img
+            src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+            srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+            loading="lazy"
+            alt=""
+          />
+        </AspectRatio>
+      </CardOverflow>
+      <CardContent>
+        <Typography level="body-xs">Kiosk 14</Typography>
+        <Link
+          href="#product-card"
+          fontWeight="md"
+          color="neutral"
+          textColor="text.primary"
+          overlay
+        >
+          Caramel Machiato
+        </Link>
+
+        <Typography
+          level="title-lg"
+          sx={{ mt: 1, fontWeight: 'xl' }}
+          endDecorator={
+            <Chip component="span" size="sm" variant="soft" color="success">
+              Buy 1 Free 1
+            </Chip>
+          }
+        >
+          RM 8.99
+        </Typography>
+        <Typography level="body-sm">
+          (Only <b>3</b> days left!)
+        </Typography>
+      </CardContent>
+      <CardOverflow>
+        <Button variant="solid" color="primary" size="lg">
+          See Promotion
+        </Button>
+      </CardOverflow>
+    </Card>
       </Box>
     </>
   );
