@@ -107,4 +107,26 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       }
     }
   }
+  if (req.method === "PATCH") {
+    const { inputStatus } = req.body;
+    
+    try {
+      const updateStatus = await prisma.application.update({
+        where: {
+          id: id,
+        },
+        data: {
+          status: inputStatus,
+        },
+      });
+
+      if (!updateStatus) {
+        req.json({ message: "Error to update status" }, { status: 500 });
+      }
+
+      return res.json(updateStatus, { status: 200 });
+    } catch (err) {
+      return res.json({ error: error.message }, { status: 500 });
+    }
+  }
 }
