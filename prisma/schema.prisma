@@ -62,12 +62,12 @@ model Promotion {
   promoid       String       @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   description   String
-  startDate     DateTime
+  startDate     DateTime?
   endDate       DateTime?
-  startTime     DateTime?
+  startTime     String?
   productName   String
-  product       String
-  poster        String
+  product       String // product category
+  poster        String? 
   application   Application? @relation(fields: [applicationId], references: [id])
   applicationId String       @db.ObjectId
 }
