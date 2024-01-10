@@ -36,12 +36,23 @@ type Business {
 }
 
 model Application {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  user        User?    @relation(fields: [userId], references: [id])
-  userId      String   @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  user        User?     @relation(fields: [userId], references: [id])
+  userId      String    @db.ObjectId
   owner       Owner
   business    Business
-  status      String?
+  status      String? // null = pending, reject, approve
   reason      String?
   createdDate DateTime
+  Billing     Billing[]
+}
+
+model Billing {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  application   Application? @relation(fields: [applicationId], references: [id])
+  applicationId String?      @db.ObjectId
+  amount        Float
+  status        String?
+  transactionId String?
+  createdDate   DateTime    @default(now())
 }
