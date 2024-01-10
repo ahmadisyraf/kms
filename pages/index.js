@@ -105,7 +105,6 @@ export default function Home() {
             </Typography>
           </Typography>
 
-          <LuBadgePercent size={25} />
         </Box><Card sx={{ width: 320, maxWidth: '100%', boxShadow: 'lg', mt:5}}>
       <CardOverflow>
         <AspectRatio sx={{ minWidth: 200 }}>
