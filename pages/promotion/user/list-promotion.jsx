@@ -97,9 +97,9 @@ export default function CreatePromotion() {
                   />
                 </td>
                 <td>{promotion[0]?.title}</td>
-                <td>{}</td>
+                <td>{promotion[0]?.startDate}</td>
                 <td>On</td>
-                <td>Any coffee (Small Size)</td>
+                <td>{promotion[0]?.productName}</td>
                 <td>
                   <Dropdown>
                     <MenuButton
