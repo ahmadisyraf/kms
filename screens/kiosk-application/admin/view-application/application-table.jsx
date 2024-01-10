@@ -1,5 +1,8 @@
 import { Table, Typography, Sheet, Box, Link, Button } from "@mui/joy";
 export default function ApplicationTable({ applications }) {
+  function capitalizeFirstLetter(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
   return (
     <Table
       aria-label="basic table"
@@ -36,7 +39,7 @@ export default function ApplicationTable({ applications }) {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Sheet
                   variant="solid"
-                  color="primary"
+                  color={d.status === "approve"? "success" : d.status === "reject"? "danger" : "primary"}
                   sx={{
                     width: "fit-content",
                     color: "white",
@@ -49,7 +52,7 @@ export default function ApplicationTable({ applications }) {
                   }}
                 >
                   <Typography level="title-sm" color="white">
-                    {d.status ? d.status : "Pending"}
+                    {d.status ? capitalizeFirstLetter(d.status) : "Pending"}
                   </Typography>
                 </Sheet>
               </Box>

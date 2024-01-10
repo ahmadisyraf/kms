@@ -41,31 +41,33 @@ model Application {
   userId      String      @db.ObjectId
   owner       Owner
   business    Business
-  status      String?
+  status      String? // null = pending, reject, approve
   reason      String?
   createdDate DateTime
-  Complaint   Complaint[]
-  Promotion   Promotion[]
+  billing     Billing[]
+  promotion   Promotion[]
 }
 
-model Complaint {
+model Billing {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  type          String
-  comment       String
   application   Application? @relation(fields: [applicationId], references: [id])
-  applicationId String       @db.ObjectId
+  applicationId String?      @db.ObjectId
+  amount        Float
+  status        String?
+  transactionId String?
+  createdDate   DateTime     @default(now())
 }
 
 model Promotion {
   promoid       String       @id @default(auto()) @map("_id") @db.ObjectId
   title         String
   description   String
-  startDate     DateTime
+  startDate     DateTime?
   endDate       DateTime?
-  startTime     DateTime?
+  startTime     String?
   productName   String
-  product       String
-  poster        String
+  product       String // product category
+  poster        String? 
   application   Application? @relation(fields: [applicationId], references: [id])
   applicationId String       @db.ObjectId
 }

@@ -26,7 +26,7 @@ const navigations = [
   {
     name: "Billing",
     icon: <MdPayments size={18} />,
-    url: "/",
+    url: "/billing/user",
   },
   {
     name: "Promotion",
