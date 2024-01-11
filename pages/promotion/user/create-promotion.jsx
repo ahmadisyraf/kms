@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import Button from "@mui/joy/Button";
 import {
   Typography,
@@ -61,6 +62,7 @@ export default function CreatePromotion() {
     resolver: yupResolver(schema),
   });
 
+  const router=useRouter()
   // Clerk user id
   const { userId, isSignedIn } = useAuth();
 
@@ -87,12 +89,16 @@ export default function CreatePromotion() {
 
     if (!postPromotion.ok) {
       toast.error("Something wrong, please contact support");
+    } else {
+      const promotion = await postPromotion.json();
+
+      if(promotion)
+      toast.success("Promotion saved");
+
+      router.push('/promotion/user/list-promotion'); // Change '/list-complaint' to the actual URL of your list-complaint page
+      
+    
     }
-
-    const promotion = await postPromotion.json();
-
-    console.log(promotion);
-    console.log(obj);
   };
 
   const VisuallyHiddenInput = styled("input")`
@@ -115,7 +121,10 @@ export default function CreatePromotion() {
         "/api/application?filter=true&status=approve",
         {
           method: "GET",
+
+          
         }
+        
       );
 
       if (!getApplication.ok) {
@@ -124,9 +133,9 @@ export default function CreatePromotion() {
 
       const application = await getApplication.json();
       toast.success("Promotion saved");
-
+      
       setApplicationId(application[0].id);
-    } catch (err) {
+      } catch (err) {
       toast.error("Something wrong, please contact our support");
     }
   };

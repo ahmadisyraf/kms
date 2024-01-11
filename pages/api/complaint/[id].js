@@ -8,7 +8,7 @@ export default async function handle(req = NextRequest, res = NextResponse) {
 
   if (req.method === "GET") {
     try {
-      const fetchPromotion = await prisma.promotion.findMany({
+      const fetchComplaint = await prisma.complaint.findMany({
         where: {
           applicationId: id,
         },
@@ -17,59 +17,52 @@ export default async function handle(req = NextRequest, res = NextResponse) {
         },
       });
 
-      if (!fetchPromotion) {
+      if (!fetchComplaint) {
         return res.json({ message: "Something wrong" }, { status: 404 });
       }
-      return res.json(fetchPromotion, { status: 200 });
+      return res.json(fetchComplaint, { status: 200 });
     } catch (err) {
       return res.json({ message: err.message }, { status: 500 });
     }
   } else if (req.method === "POST") {
     const {
-      inputPromotionTitle,
-      inputDescription,
-      inputStartDate,
-      inputEndDate,
-      inputStartTime,
-      inputProductName,
-      inputProductCategory,
+      inputType,
+      inputComment,
     } = req.body;
     try {
-      const postPromotion = await prisma.promotion.create({
+      const postComplaint = await prisma.complaint.create({
         data: {
-          title: inputPromotionTitle,
-          description: inputDescription,
-          startDate: new Date(inputStartDate),
-          endDate: new Date(inputEndDate),
-          //   startTime: inputStartTime,
-          productName: inputProductName,
-          product: inputProductCategory,
+          type: inputType,
+          comment: inputComment,
+          status: null,
           application: { connect: { id: id } },
         },
       });
 
-      if (!postPromotion) {
+      if (!postComplaint) {
         res.json({ message: "Something wrong" }, { status: 404 });
       }
 
-      return res.json(postPromotion, { status: 200 });
+      return res.json(postComplaint, { status: 200 });
     } catch (err) {
       res.json({ message: err.message }, { status: 500 });
     }
+  
+      
   }
   if (req.method === "DELETE") {
     try {
-      const deletePromotion = await prisma.promotion.delete({
+      const deleteComplaint = await prisma.complaint.delete({
         where: {
-          promoid: id,
+          complaintid: id,
         },
       });
 
-      if (!deletePromotion) {
+      if (!deleteComplaint) {
         return res.json({ message: "Something wrong" }, { status: 404 });
       }
 
-      return res.json({ message: "Promotion deleted" }, { status: 200 });
+      return res.json({ message: "Complaint deleted" }, { status: 200 });
     } catch (err) {
       return res.json({ message: err.message }, { status: 500 });
     }
