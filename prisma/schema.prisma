@@ -45,3 +45,12 @@ model Application {
   reason      String?
   createdDate DateTime
 }
+
+model Workorder {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  // complaint   Complaint @relation(fields: [complaintId], references: [id])
+  complaintId String    
+  assignee    String
+  note        String
+  date    DateTime
+}
