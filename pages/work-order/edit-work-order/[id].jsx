@@ -1,6 +1,11 @@
 import React from "react";
-import EditWorkOrderScreen from "@/screens/kiosk-application/workOrder/EditWorkOrder";
+import EditWorkOrderScreen from "@/screens/workOrder/EditWorkOrder";
+import DashboardLayout from "@/layouts/dashboard";
 
 export default function ViewWorkOrderPage() {
-  return <EditWorkOrderScreen />;
+  return (
+    <DashboardLayout>
+      <EditWorkOrderScreen />
+    </DashboardLayout>
+  );
 }

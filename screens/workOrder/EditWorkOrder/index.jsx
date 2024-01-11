@@ -19,11 +19,13 @@ import {
   MenuItem,
 } from "@mui/joy";
 import { useRouter } from "next/router";
+import toast from "react-hot-toast";
 
 export default function EditWorkOrderScreen() {
   const router = useRouter();
   const { id } = router.query;
   const [workOrder, setWorkOrder] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchWorkOrder = async () => {
     const getWorkOrder = await fetch(`/api/workOrder/${id}`, {
@@ -53,6 +55,8 @@ export default function EditWorkOrderScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsLoading(true); // Set isLoading to true when submitting
+
       const updateWorkOrder = await fetch(`/api/workOrder/${id}`, {
         method: "PATCH",
         headers: {
@@ -63,15 +67,16 @@ export default function EditWorkOrderScreen() {
 
       if (!updateWorkOrder.ok) {
         console.log("pariah");
-        // You might want to handle successful creation here, e.g., navigate to a success page or reset the form.
       }
 
       console.log("Succes bro");
+      setIsLoading(false); // Set isLoading to true when submitting
+
+      router.push("/work-order");
+      toast.success("Work order edited!");
     } catch (error) {
-      // Handle other errors, e.g., network issues
       console.error("An error occurred:", error);
-      // Assuming you have a toast library like react-toastify or a similar one to show error messages
-      // toast.error("Please check internet connection, or contact our support");
+      setIsLoading(false); // Set isLoading to true when submitting
     }
   };
 
@@ -85,8 +90,8 @@ export default function EditWorkOrderScreen() {
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0"); // Months are 0-based, so we add 1 and pad with 0 if necessary
-    const day = String(d.getDate()).padStart(2, "0"); // Pad with 0 if necessary
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   };
@@ -103,47 +108,8 @@ export default function EditWorkOrderScreen() {
       </Typography>
 
       <Card variant="outlined">
-        <Stack direction="row" spacing={2}>
-          {/* <Box sx={{ width: "100%" }}>
-            <FormControl>
-              <FormLabel>Complaint ID</FormLabel>
-              <Select
-                placeholder="Choose complaint"
-                value={selectedComplaintTitle} // Bind the value to the state
-                onChange={handleChange} // Attach the onChange handler
-              >
-                {dummyData.map((item, index) => (
-                  <Option key={index} value={item.complaintTitle}>
-                    {item.complaintTitle}
-                  </Option>
-                ))}
-              </Select>
-            </FormControl>
-
-            <FormControl>
-              <FormLabel>Complaint Type</FormLabel>
-              <Input
-                value={selectedComplaint ? selectedComplaint.complaintType : ""}
-                disabled
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Kiosk Number</FormLabel>
-              <Input
-                value={selectedComplaint ? selectedComplaint.kioskNumber : ""}
-                disabled
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>Complaint Details</FormLabel>
-              <Input
-                value={selectedComplaint ? selectedComplaint.complaintNote : ""}
-                disabled
-              />
-            </FormControl>
-          </Box> */}
-          <Divider orientation="vertical" />
-          <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%" }}>
+          <Stack direction="column" spacing={2}>
             <FormControl>
               <FormLabel>Assignee</FormLabel>
               <Select
@@ -184,16 +150,26 @@ export default function EditWorkOrderScreen() {
                 }
               />
             </FormControl>
-            <Button
-              variant="solid"
-              size="sm"
-              sx={{ height: 20 }}
-              onClick={handleSubmit} // Attach the submit handler
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
             >
-              Submit
-            </Button>
-          </Box>
-        </Stack>
+              <Button
+                variant="solid"
+                size="sm"
+                sx={{ height: 20, width: 100 }}
+                onClick={handleSubmit} // Attach the submit handler
+                loading={isLoading ? true : false}
+                loadingPosition="start"
+              >
+                {isLoading ? "Submitting" : "Submit"}
+              </Button>
+            </Box>
+          </Stack>
+        </Box>
       </Card>
     </Container>
   );

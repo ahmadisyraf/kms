@@ -60,15 +60,15 @@ model Billing {
 }
 
 model Promotion {
-  promoid       String       @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  startDate     DateTime?
-  endDate       DateTime?
-  startTime     String?
-  productName   String
-  product       String // product category
-  poster        String?
+  promoid     String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  startDate   DateTime?
+  endDate     DateTime?
+  startTime   String?
+  productName String
+  product     String // product category
+  poster      String?
 
   application   Application? @relation(fields: [applicationId], references: [id])
   applicationId String       @db.ObjectId
@@ -81,13 +81,14 @@ model Complaint {
   status        String?
   application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String       @db.ObjectId
+  Workorder     Workorder[]
 }
 
 model Workorder {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  // complaint   Complaint @relation(fields: [complaintId], references: [id])
-  complaintId String    
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  complaint   Complaint? @relation(fields: [complaintId], references: [complaintid])
+  complaintId String     @db.ObjectId
   assignee    String
   note        String
-  date    DateTime
+  date        DateTime
 }

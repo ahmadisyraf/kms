@@ -15,6 +15,8 @@ import { MdPayments } from "react-icons/md";
 import { useRouter } from "next/router";
 import { BiSolidDiscount } from "react-icons/bi";
 import { TbReport } from "react-icons/tb";
+import { MdAssignment } from "react-icons/md";
+
 
 const navigations = [
   {
@@ -49,6 +51,11 @@ const protectedNavigation = [
     name: "Billing",
     icon: <MdPayments size={18} />,
     url: "/billing/admin",
+  },
+  {
+    name: "Work Order",
+    icon: <MdAssignment size={18} />,
+    url: "/work-order",
   },
 ];
 

@@ -11,7 +11,7 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       const createWorkOrder = await prisma.workorder.create({
         data: {
           assignee: assignee,
-          complaintId: id,
+          complaint: { connect: { complaintid: id } },
           date: new Date(date),
           note: note,
         },
@@ -47,6 +47,9 @@ export default async function handler(req = NextRequest, res = NextResponse) {
         where: {
           id: id,
         },
+        include: {
+          complaint: true,
+        },
       });
 
       if (!getWorkOrderById) {
@@ -64,6 +67,9 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       const updatedWorkOrder = await prisma.workorder.update({
         where: {
           id: id, // Assuming id is a number; convert it to the appropriate type if needed
+        },
+        include: {
+          complaint: true,
         },
         data: {
           assignee: assignee,
