@@ -22,7 +22,8 @@ const Lottie = dynamic(
 );
 import animation from "../../../../public/empty.json";
 import { useEffect, useState } from "react";
-const ApplicationTable = dynamic(
+
+const ReportTable = dynamic(
   () =>
     import(
       "@/screens/report/pupukadmin/kiosk-report/report-table"
@@ -31,34 +32,67 @@ const ApplicationTable = dynamic(
 );
 import Loader from "@/components/Loader";
 
-export default function ViewApplicationPage() {
-  const [applications, setApplications] = useState();
+export default function ViewSalesReportPage() {
+  const [reports, setReports] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [resBillingTotal, setResBillingTotal] = useState();
+  const [billingTotal, setBillingTotal] = useState();
 
-  const fetchApplications = async () => {
-    setIsLoading(true);
-    const applications = await fetch(`/api/application`, {
-      method: "GET",
-    });
+  const fetchBillingAmount = async () => {
+    try {
+      const dbData = await fetch(
+        `/api/report/${"6582970981db07df46dba0ac"}`,
+        {
+          method: "GET",
+        }
+      );
+      const data = await dbData.json();
 
-    if (!applications.ok) {
-      throw new Error("Something wrong, please contact our support");
+      // Fetch total amount from the 'billing' model
+      const billingTotal = await fetch("/api/report?filter=total", {
+        method: "GET",
+      });
+
+      if (!billingTotal.ok) {
+        throw new Error("Failed to fetch billing total");
+      }
+
+      const resBillingTotal = await billingTotal.json();
+
+      // Fetch total amount from the 'user' model
+      const userTotal = await fetch("/api/report?filter=total", {
+        method: "GET",
+      });
+
+      if (!userTotal.ok) {
+        throw new Error("Failed to fetch user total");
+      }
+
+      const resUserTotal = await userTotal.json();
+
+      // Log the results
+      console.log(resBillingTotal, "...billing total");
+      console.log(resUserTotal, "...user total");
+
+      // Set the state using the setter
+      setResBillingTotal(resBillingTotal);
+      setBillingTotal(billingTotal);
+      
+    } catch (err) {
+      console.error(err);
     }
-
-    const data = await applications.json();
-
-    setApplications(data);
-    setIsLoading(false);
   };
 
+  // Use useEffect for component lifecycle methods
   useEffect(() => {
-    fetchApplications();
-  }, []);
+    fetchBillingAmount();
+  }, []); // empty dependency array means this effect runs once after the initial render
+
 
   const breadcrumbs = [
     {
       name: "Dashboard",
-      link: "/report/pupukadmin",
+      link: "/report/pupukadmin/",
     },
     { name: "Sales Report", link: "/report/pupukadmin" },
   ];
@@ -93,21 +127,21 @@ export default function ViewApplicationPage() {
         <Card variant="solid" color="primary" invertedColors size="sm">
                 <CardContent> 
                     <Typography level="body-md">Total Sales</Typography> 
-                    <Typography level="h2">RM 432.6M</Typography>
+                    <Typography level="h2">RM 12345</Typography>
                 </CardContent>
             </Card>
 
             <Card variant="solid" color="primary" invertedColors size="sm">
                 <CardContent> 
                     <Typography level="body-md">Total Kiosk</Typography> 
-                    <Typography level="h2">432</Typography>
+                    <Typography level="h2">12</Typography>
                 </CardContent>
             </Card>
 
             <Card variant="solid" color="primary" invertedColors size="sm">
                 <CardContent> 
                     <Typography level="body-md">Total Invoices</Typography> 
-                    <Typography level="h2">2000</Typography>
+                    <Typography level="h2">423</Typography>
                 </CardContent>
             </Card>
         
@@ -130,13 +164,13 @@ export default function ViewApplicationPage() {
               <Loader />
             ) : (
               <Box>
-                {applications && applications.length > 0 ? (
-                  <ApplicationTable applications={applications} />
+                {reports && reports.length > 0 ? (
+                  <ReportTable reports={reports} />
                 ) : (
                   <Box sx={{ position: "relative", width: 300 }}>
                     <Lottie animationData={animation} loop={true} />
                     <Typography level="h3" textAlign={"center"}>
-                      No application found
+                      No report found
                     </Typography>
                   </Box>
                 )}

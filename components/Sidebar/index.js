@@ -45,6 +45,10 @@ const protectedNavigation = [
     name: "Kiosk application",
     icon: <FaShop size={18} />,
     url: "/kiosk-application/admin/view-application",
+
+    name: "Kiosk Sales Report",
+    icon: <TbReport size={18} />,
+    url: "/report/pupukadmin",
   },
 ];
 

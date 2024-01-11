@@ -1,5 +1,6 @@
 import { Table, Typography, Sheet, Box, Link, Button } from "@mui/joy";
-export default function ApplicationTable({ applications }) {
+
+export default function ReportTable({ reports }) {
   return (
     <Table
       aria-label="basic table"
@@ -18,22 +19,22 @@ export default function ApplicationTable({ applications }) {
         </tr>
       </thead>
       <tbody>
-        {applications?.map((d, index) => (
+        {reports?.map((d, index) => (
           <tr key={index}>
             <td>
               <Box>
-                <Typography level="title-sm">{d.business.name}</Typography>
-                <Typography level="body-xs">{`SSM: ${d.business.ssmNo}`}</Typography>
+                <Typography level="title-sm">{`Megah Holdings Sdn. Bhd.`}</Typography>
+                <Typography level="body-xs">{`SSM: ${123456789}`}</Typography>
               </Box>
             </td>
             <td>
               <Typography level="title-sm" color="neutral">
-                {`+60${d.business.phoneNo}`}
+              {`RM ${12345}`}
               </Typography>
             </td>
             <td>
               <Typography level="title-sm" color="neutral">
-                {new Date(d.createdDate).toLocaleDateString()}
+              {`23`}
               </Typography>
             </td>
             <td>

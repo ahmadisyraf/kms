@@ -5,7 +5,7 @@ export default function PupukAdminKioskReportPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.push("/report/pupukadmin/view-kiosk-report/");
+    router.push("/report/pupukadmin/kiosk-report/");
   }, [router]); 
 
   return null;
