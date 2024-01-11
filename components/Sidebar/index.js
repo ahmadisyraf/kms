@@ -13,6 +13,8 @@ import Link from "next/link";
 import { FaShop } from "react-icons/fa6";
 import { MdPayments } from "react-icons/md";
 import { useRouter } from "next/router";
+import { BiSolidDiscount } from "react-icons/bi";
+import { TbReport } from "react-icons/tb";
 
 const navigations = [
   {
@@ -23,7 +25,17 @@ const navigations = [
   {
     name: "Billing",
     icon: <MdPayments size={18} />,
-    url: "/",
+    url: "/billing/user",
+  },
+  {
+    name: "Promotion",
+    icon: <BiSolidDiscount size={18} />,
+    url: "/promotion/user/list-promotion",
+  },
+  {
+    name: "Complaint",
+    icon: <TbReport size={18} />,
+    url: "/complaint/user/list-complaint",
   },
 ];
 
@@ -32,6 +44,11 @@ const protectedNavigation = [
     name: "Kiosk application",
     icon: <FaShop size={18} />,
     url: "/kiosk-application/admin/view-application",
+  },
+  {
+    name: "Billing",
+    icon: <MdPayments size={18} />,
+    url: "/billing/admin",
   },
 ];
 

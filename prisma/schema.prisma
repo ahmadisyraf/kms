@@ -36,14 +36,51 @@ type Business {
 }
 
 model Application {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  user        User?    @relation(fields: [userId], references: [id])
-  userId      String   @db.ObjectId
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  user        User?       @relation(fields: [userId], references: [id])
+  userId      String      @db.ObjectId
   owner       Owner
   business    Business
-  status      String?
+  status      String? // null = pending, reject, approve
   reason      String?
   createdDate DateTime
+  billing     Billing[]
+  promotion   Promotion[]
+  Complaint   Complaint[]
+}
+
+model Billing {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String?      @db.ObjectId
+  amount        Float
+  status        String?
+  transactionId String?
+  createdDate   DateTime     @default(now())
+}
+
+model Promotion {
+  promoid       String       @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  startDate     DateTime?
+  endDate       DateTime?
+  startTime     String?
+  productName   String
+  product       String // product category
+  poster        String?
+
+  application   Application? @relation(fields: [applicationId], references: [id])
+  applicationId String       @db.ObjectId
+}
+
+model Complaint {
+  complaintid   String       @id @default(auto()) @map("_id") @db.ObjectId
+  type          String
+  comment       String
+  status        String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  applicationId String       @db.ObjectId
 }
 
 model Workorder {

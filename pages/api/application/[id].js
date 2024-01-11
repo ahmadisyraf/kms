@@ -80,6 +80,26 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       } catch (error) {
         return res.json(error, { status: 500 });
       }
+    } else if (req.query.search) {
+      const search = req.query.search;
+
+      try {
+        const searchApplication = await prisma.application.findMany({
+          where: {
+            status: {
+              contains: search,
+            },
+          },
+        });
+
+        if (!searchApplication) {
+          res.json({ message: "Something wrong" }, { status: 400 });
+        }
+
+        return res.json(searchApplication, { status: 200 });
+      } catch (err) {
+        return res.json({ message: err.message }, { status: 200 });
+      }
     } else {
       try {
         const findUser = await prisma.user.findUnique({
@@ -105,6 +125,43 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       } catch (error) {
         return res.json({ error: error.message }, { status: 500 });
       }
+    }
+  } else if (req.method === "PATCH") {
+    const { inputStatus } = req.body;
+
+    try {
+      const updateStatus = await prisma.application.update({
+        where: {
+          id: id,
+        },
+        data: {
+          status: inputStatus,
+        },
+      });
+
+      if (!updateStatus) {
+        req.json({ message: "Error to update status" }, { status: 500 });
+      }
+
+      return res.json(updateStatus, { status: 200 });
+    } catch (err) {
+      return res.json({ error: error.message }, { status: 500 });
+    }
+  } else if (req.method === "DELETE") {
+    try {
+      const deleteApplication = await prisma.application.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!deleteApplication) {
+        return res.json({ message: "Something wrong" }, { status: 404 });
+      }
+
+      return res.json({ message: "Application deleted" }, { status: 200 });
+    } catch (err) {
+      return res.json({ message: err.message }, { status: 500 });
     }
   }
 }

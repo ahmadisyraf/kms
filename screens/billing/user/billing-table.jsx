@@ -1,5 +1,5 @@
 import { Table, Box, Typography, Sheet } from "@mui/joy";
-export default function ApplicationTable({ applications }) {
+export default function BillingTable({ billing }) {
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
@@ -15,23 +15,23 @@ export default function ApplicationTable({ applications }) {
       <thead>
         <tr>
           <th style={{ width: "40%" }}>Business</th>
-          <th>Phone</th>
+          <th>Amount</th>
           <th>Status</th>
           <th>Created Date</th>
         </tr>
       </thead>
       <tbody>
-        {applications?.map((d, index) => (
+        {billing?.map((d, index) => (
           <tr key={index}>
             <td>
               <Box>
-                <Typography level="title-sm">{d.business.name}</Typography>
-                <Typography level="body-xs">{`SSM: ${d.business.ssmNo}`}</Typography>
+                <Typography level="title-sm">{d.application.business.name}</Typography>
+                <Typography level="body-xs">{`SSM: ${d.application.business.ssmNo}`}</Typography>
               </Box>
             </td>
             <td>
               <Typography level="title-sm" color="neutral">
-                {`+60${d.business.phoneNo}`}
+                {"RM" + " " + d.amount}
               </Typography>
             </td>
             <td>
@@ -39,7 +39,7 @@ export default function ApplicationTable({ applications }) {
                 <Sheet
                   variant="solid"
                   color={
-                    d.status === "approve"
+                    d.status === "success"
                       ? "success"
                       : d.status === "reject"
                       ? "danger"

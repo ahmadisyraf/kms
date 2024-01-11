@@ -12,6 +12,9 @@ import {
   Sheet,
   AspectRatio,
   CircularProgress,
+  Select,
+  Option,
+  FormHelperText,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
 import Link from "next/link";
@@ -21,18 +24,10 @@ import * as yup from "yup";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Loader from "@/components/Loader";
+import toast from "react-hot-toast";
 
 const schema = yup.object({
-  inputOwnerName: yup.string().required("Owner name is required"),
-  inputOwnerIC: yup.string().required("Owner IC is required"),
-  inputPhoneNumber: yup.string().required("Phone number is required"),
-  inputOwnerAddress: yup.string().required("Owner address is required"),
-  inputBusinessName: yup.string().required("Business name is required"),
-  inputBusinessSSM: yup.string().required("Business SSM number is required"),
-  inputBusinessPhoneNumber: yup
-    .string()
-    .required("Business phone number is required"),
-  inputTyphoidInjection: yup.string().required("Typhoid Injection is required"),
+  inputStatus: yup.string().required("Status is required field"),
 });
 
 const breadcrumbs = [
@@ -49,6 +44,7 @@ const breadcrumbs = [
 
 export default function ApplyKioskPage() {
   const {
+    register,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -90,7 +86,38 @@ export default function ApplyKioskPage() {
     }
   }, [applicationId]);
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+  
+    const obj = {
+      inputStatus: data.inputStatus,
+    };
+
+    console.log(obj)
+  
+    try {
+      const status = await fetch(`/api/application/${applicationId}`, {
+        method: "PATCH",
+        body: JSON.stringify(obj), // Use 'body' instead of 'data'
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      const response = await status.json();
+  
+      if (status.ok) {
+        toast.success("Application status updated");
+        router.push("/kiosk-application/admin/view-application");
+      } else {
+        toast.error("Something wrong, please contact support!");
+      }
+
+      console.log(response)
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -188,6 +215,14 @@ export default function ApplyKioskPage() {
                   readOnly
                   value={application?.business.typhoidInjection}
                 />
+              </FormControl>
+              <FormControl error={errors?.inputStatus}>
+                <FormLabel>Status</FormLabel>
+                <Select placeholder="Choose one…" {...register("inputStatus")} defaultValue={application?.status}>
+                  <Option value={"reject"}>Reject</Option>
+                  <Option value={"approve"}>Approve</Option>
+                </Select>
+                <FormHelperText>{errors?.inputStatus?.message}</FormHelperText>
               </FormControl>
               <Button type="submit">Submit</Button>
             </Stack>
