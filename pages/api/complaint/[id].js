@@ -7,28 +7,45 @@ export default async function handle(req = NextRequest, res = NextResponse) {
   const { id } = req.query;
 
   if (req.method === "GET") {
-    try {
-      const fetchComplaint = await prisma.complaint.findMany({
-        where: {
-          applicationId: id,
-        },
-        include: {
-          application: true,
-        },
-      });
+    if (req.query.filter === "complaint") {
+      try {
+        const fetchComplaint = await prisma.complaint.findMany({
+          where: {
+            complaintid: id,
+          },
+          include: {
+            application: true,
+          },
+        });
 
-      if (!fetchComplaint) {
-        return res.json({ message: "Something wrong" }, { status: 404 });
+        if (!fetchComplaint) {
+          return res.json({ message: "Something wrong" }, { status: 404 });
+        }
+        return res.json(fetchComplaint, { status: 200 });
+      } catch (err) {
+        return res.json({ message: err.message }, { status: 500 });
       }
-      return res.json(fetchComplaint, { status: 200 });
-    } catch (err) {
-      return res.json({ message: err.message }, { status: 500 });
+    } else {
+      try {
+        const fetchComplaint = await prisma.complaint.findMany({
+          where: {
+            applicationId: id,
+          },
+          include: {
+            application: true,
+          },
+        });
+
+        if (!fetchComplaint) {
+          return res.json({ message: "Something wrong" }, { status: 404 });
+        }
+        return res.json(fetchComplaint, { status: 200 });
+      } catch (err) {
+        return res.json({ message: err.message }, { status: 500 });
+      }
     }
   } else if (req.method === "POST") {
-    const {
-      inputType,
-      inputComment,
-    } = req.body;
+    const { inputType, inputComment } = req.body;
     try {
       const postComplaint = await prisma.complaint.create({
         data: {
@@ -47,8 +64,6 @@ export default async function handle(req = NextRequest, res = NextResponse) {
     } catch (err) {
       res.json({ message: err.message }, { status: 500 });
     }
-  
-      
   }
   if (req.method === "DELETE") {
     try {
