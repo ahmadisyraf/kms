@@ -1,5 +1,7 @@
 import * as React from "react";
 import Button from "@mui/joy/Button";
+import { useState, useEffect } from "react";
+import { useRouter } from 'next/router';
 import {
   Typography,
   Input,
@@ -21,17 +23,113 @@ import {
   Chip,
   Stack,
   SvgIcon,
-  styled, 
+  styled,
   selectClasses,
-
 } from "@mui/joy";
-import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
 import MoreVert from "@mui/icons-material/MoreVert";
 import DashboardLayout from "@/layouts/dashboard";
-export default function CreatePromotion() {
-  const handleChange = (event, newValue) => {
-    console.log(`You have choosen "${newValue}"`);
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useAuth } from "@clerk/nextjs";
+import toast from "react-hot-toast";
+
+const breadcrumbs = [
+  {
+    name: "Dashboard",
+    link: "/complaint/user",
+  },
+  { name: "Kiosk Complaint", link: "/complaint/user" },
+  {
+    name: "New Complaint",
+    link: "/complaint/user/create-complaint",
+  },
+];
+
+const schema = yup
+  .object({
+    inputType: yup.string().required("Type is required field"),
+    inputComment: yup.string().required("Comment is required field"),
+    // inputPoster: yup.string().required("Poster is required field"),
+  })
+  .required();
+
+export default function CreateComplaint() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+  const router=useRouter()
+
+  const { userId, isSignedIn } = useAuth();
+
+  const [applicationId, setApplicationId] = useState();
+
+  // Get application id from clerk user id
+  const fetchApplicationId = async () => {
+    try {
+      // Get approve application
+      const getApplication = await fetch(
+        "/api/application?filter=true&status=approve",
+        {
+          method: "GET",
+        }
+      );
+
+      if (!getApplication.ok) {
+        toast.error("Something wrong please contact our support");
+      }
+
+      const application = await getApplication.json();
+      toast.success("Complaint saved");
+
+      setApplicationId(application[0].id);
+    } catch (err) {
+      toast.error("Something wrong, please contact our support");
+    }
   };
+
+  const onSubmit = async (data) => {
+    const obj = {
+      inputType: data.inputType,
+      inputComment: data.inputComment,
+    };
+
+    try {
+      const postComplaint = await fetch(`/api/complaint/${applicationId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(obj),
+      });
+
+      if (!postComplaint.ok) {
+        toast.error("Something wrong, please contact support");
+      } else if (postComplaint.ok) {
+        const complaint = await postComplaint.json();
+        console.log(complaint);
+        toast.success("Complaint saved");
+
+        router.push('/complaint/user/list-complaint'); // Change '/list-complaint' to the actual URL of your list-complaint page
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchApplicationId();
+    }
+  }, [isSignedIn]);
+
+  console.log(applicationId, "..tada");
+
   const VisuallyHiddenInput = styled("input")`
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
@@ -47,13 +145,15 @@ export default function CreatePromotion() {
     <DashboardLayout>
       <Box>
         <Typography level="h1" color="secondary" fontSize={35} sx={{ mt: 15 }}>
-          Add Complaint
+          Create Complaint
         </Typography>
         <Box>
-          <Card sx={{ mt: 2 }}>
+          <Card sx={{ mt: 2 }} component={"form"} onSubmit={handleSubmit(onSubmit)}>
+            <FormControl error={errors?.inputType}>
               <FormLabel sx={{ my: 1 }}>Complaint type :</FormLabel>
               <Select
                 placeholder="Select a type"
+                {...register("inputType")}
                 indicator={<KeyboardArrowDown />}
                 sx={{
                   [`& .${selectClasses.indicator}`]: {
@@ -66,46 +166,22 @@ export default function CreatePromotion() {
               >
                 <Option value="cleanliness">Cleanliness</Option>
                 <Option value="fooddrink">Food&Drink</Option>
-                <Option value="fish">Facility</Option>
+                <Option value="facility">Facility</Option>
                 <Option value="other">Other</Option>
               </Select>
-              <FormLabel sx={{ my: 1 }}>Kiosk Number :</FormLabel>
-              <Select
-                placeholder="Pick your kiosk number"
-                indicator={<KeyboardArrowDown />}
-                sx={{
-                  [`& .${selectClasses.indicator}`]: {
-                    transition: "0.2s",
-                    [`&.${selectClasses.expanded}`]: {
-                      transform: "rotate(-180deg)",
-                    },
-                  },
-                }}
-              >
-                <Option value="Kiosk 1">Kiosk 1</Option>
-                <Option value="Kiosk 2">Kiosk 2</Option>
-                <Option value="Kiosk 3">Kiosk 3</Option>
-                <Option value="Kiosk 4">Kiosk 4</Option>
-                <Option value="Kiosk 5">Kiosk 5</Option>
-                <Option value="Kiosk 6">Kiosk 6</Option>
-                <Option value="Kiosk 7">Kiosk 7</Option>
-                <Option value="Kiosk 8">Kiosk 8</Option>
-                <Option value="Kiosk 9">Kiosk 9</Option>
-                <Option value="Kiosk 10">Kiosk 10</Option>
-                <Option value="Kiosk 11">Kiosk 11</Option>
-                <Option value="Kiosk 12">Kiosk 12</Option>
-                <Option value="Kiosk 13">Kiosk 13</Option>
-                <Option value="Kiosk 14">Kiosk 14</Option>
-                <Option value="Kiosk 15">Kiosk 15</Option>
-                <Option value="Kiosk 16">Kiosk 16</Option>
-              </Select>
-              <FormLabel sx={{ my: 1 }}>Description :</FormLabel>
+              <FormHelperText>{errors?.inputType?.message}</FormHelperText>
+            </FormControl>
+            <FormControl error={errors?.inputComment}>
+              <FormLabel sx={{ my: 1 }}>Comment :</FormLabel>
               <Textarea
-                size="lg"
                 name="Size"
-                placeholder="One of the drawer cannot be used."
+                placeholder="Do not miss your chance"
+                {...register("inputComment")}
+                minRows={4}
               />
-              <Button>Submit</Button>
+              <FormHelperText>{errors?.inputComment?.message}</FormHelperText>
+            </FormControl>
+            <Button type="submit">Submit</Button>
           </Card>
         </Box>
       </Box>
