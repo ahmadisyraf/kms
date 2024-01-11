@@ -1,8 +1,50 @@
 import { Table, Typography, Sheet, Box, Link, Button } from "@mui/joy";
-export default function ApplicationTable({ applications }) {
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+
+export default function ApplicationTable({ applications, search }) {
+  const router = useRouter();
   function capitalizeFirstLetter(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
+
+  const handleDelete = async (applicationId) => {
+    try {
+      const loadingToast = toast.loading("Loading, please wait");
+      const deleteApplication = await fetch(
+        `/api/application/${applicationId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!deleteApplication.ok) {
+        toast.error("Something wrong, please contact our support", {
+          id: loadingToast,
+        });
+      } else if (deleteApplication.ok) {
+        toast.success(`Application: ${applicationId} deleted`, {
+          id: loadingToast,
+        });
+
+        // router.reload();
+        const deleted = await deleteApplication.json();
+
+        console.log(deleted, "..hehe");
+      }
+    } catch (err) {
+      toast.error("Something wrong, please contact our support", {
+        id: loadingToast,
+      });
+    }
+  };
+
+  const filteredApplications = search
+    ? applications.filter((app) =>
+        app.business.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : applications;
+
   return (
     <Table
       aria-label="basic table"
@@ -19,10 +61,11 @@ export default function ApplicationTable({ applications }) {
           <th>Status</th>
           <th>Created Date</th>
           <th></th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        {applications?.map((d, index) => (
+        {filteredApplications.map((d, index) => (
           <tr key={index}>
             <td>
               <Box>
@@ -39,7 +82,13 @@ export default function ApplicationTable({ applications }) {
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Sheet
                   variant="solid"
-                  color={d.status === "approve"? "success" : d.status === "reject"? "danger" : "primary"}
+                  color={
+                    d.status === "approve"
+                      ? "success"
+                      : d.status === "reject"
+                      ? "danger"
+                      : "primary"
+                  }
                   sx={{
                     width: "fit-content",
                     color: "white",
@@ -66,6 +115,15 @@ export default function ApplicationTable({ applications }) {
               <Link href={`/kiosk-application/admin/view-application/${d.id}`}>
                 <Button variant="plain">View</Button>
               </Link>
+            </td>
+            <td>
+              <Button
+                variant="plain"
+                color="danger"
+                onClick={() => handleDelete(d.id)}
+              >
+                Delete
+              </Button>
             </td>
           </tr>
         ))}

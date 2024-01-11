@@ -10,12 +10,11 @@ import {
   Divider,
 } from "@mui/joy";
 import Link from "next/link";
-import { FaShop} from "react-icons/fa6";
+import { FaShop } from "react-icons/fa6";
 import { MdPayments } from "react-icons/md";
 import { useRouter } from "next/router";
 import { BiSolidDiscount } from "react-icons/bi";
 import { TbReport } from "react-icons/tb";
-
 
 const navigations = [
   {
@@ -45,6 +44,11 @@ const protectedNavigation = [
     name: "Kiosk application",
     icon: <FaShop size={18} />,
     url: "/kiosk-application/admin/view-application",
+  },
+  {
+    name: "Billing",
+    icon: <MdPayments size={18} />,
+    url: "/billing/admin",
   },
 ];
 
