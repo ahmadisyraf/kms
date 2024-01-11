@@ -5,6 +5,7 @@ import {
   Sheet,
   Typography,
   CircularProgress,
+  Input,
 } from "@mui/joy";
 import { IoIosArrowForward } from "react-icons/io";
 import Link from "next/link";
@@ -26,10 +27,36 @@ const ApplicationTable = dynamic(
   { ssr: false, loading: () => <p>Loading...</p> }
 );
 import Loader from "@/components/Loader";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import toast from "react-hot-toast";
+import { useRouter } from "next/router";
+import { IoSearch } from "react-icons/io5";
+
+const schema = yup
+  .object({
+    inputSearch: yup.string().required(),
+  })
+  .required();
 
 export default function ViewApplicationPage() {
   const [applications, setApplications] = useState();
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState();
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    setSearch(data.inputSearch);
+  };
 
   const fetchApplications = async () => {
     setIsLoading(true);
@@ -76,7 +103,25 @@ export default function ViewApplicationPage() {
 
         <Typography level="h2">Kiosk application</Typography>
 
-        <Box sx={{ mt: 5 }}>
+        <Box
+          sx={{
+            mt: 5,
+            width: "100%",
+            display: "flex",
+            flexDirection: "row-reverse",
+          }}
+          component={"form"}
+          onSubmit={handleSubmit(onSubmit)}
+        >
+          <Input
+            startDecorator={<IoSearch />}
+            placeholder="Search"
+            {...register("inputSearch")}
+            sx={{ width: 200 }}
+          />
+        </Box>
+
+        <Box sx={{ mt: 2 }}>
           <Sheet
             variant="outlined"
             sx={{
@@ -94,7 +139,10 @@ export default function ViewApplicationPage() {
             ) : (
               <Box>
                 {applications && applications.length > 0 ? (
-                  <ApplicationTable applications={applications} />
+                  <ApplicationTable
+                    applications={applications}
+                    search={search}
+                  />
                 ) : (
                   <Box sx={{ position: "relative", width: 300 }}>
                     <Lottie animationData={animation} loop={true} />

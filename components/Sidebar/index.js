@@ -10,12 +10,14 @@ import {
   Divider,
 } from "@mui/joy";
 import Link from "next/link";
-import { FaShop} from "react-icons/fa6";
+import { FaShop } from "react-icons/fa6";
 import { MdPayments } from "react-icons/md";
 import { useRouter } from "next/router";
 import { BiSolidDiscount } from "react-icons/bi";
 import { TbReport } from "react-icons/tb";
-
+import { useEffect, useState } from "react";
+import { currentUser, useAuth } from "@clerk/nextjs";
+import { MdAssignment } from "react-icons/md";
 
 const navigations = [
   {
@@ -51,10 +53,44 @@ const protectedNavigation = [
     icon: <TbReport size={18} />,
     url: "/complaint/admin/view-complaint",
   },
+  {
+    name: "Billing",
+    icon: <MdPayments size={18} />,
+    url: "/billing/admin",
+  },
+  {
+    name: "Work Order",
+    icon: <MdAssignment size={18} />,
+    url: "/work-order",
+  },
 ];
 
 export default function Sidebar() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
+  const [user, setUser] = useState();
+
+  const fetchUser = async () => {
+    const currentUser = await fetch("/api/user/", {
+      method: "GET",
+    });
+
+    if (!currentUser) {
+      throw new Error("Something went wrong");
+    }
+
+    const getCurrent = await currentUser.json();
+
+    setUser(getCurrent.user);
+  };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchUser();
+    }
+  }, [isSignedIn]);
+
+  console.log(user, "..sidebar");
 
   return (
     <Sheet
@@ -92,33 +128,37 @@ export default function Sidebar() {
           <Divider />
         </Stack>
       </List>
-      <Typography
-        level="body-xs"
-        color="neutral"
-        textTransform={"uppercase"}
-        mt={2}
-      >
-        ADMIN PANEL
-      </Typography>
-      <List size="md" sx={{ mt: 2 }}>
-        <Stack direction={"column"} spacing={1}>
-          {protectedNavigation.map((nav, index) => (
-            <Link href={nav.url} key={index}>
-              <ListItem>
-                <ListItemButton
-                  variant="plain"
-                  color="primary"
-                  selected={router.pathname === nav.url}
-                  sx={{ borderRadius: 10, py: 1 }}
-                >
-                  <ListItemDecorator>{nav.icon}</ListItemDecorator>
-                  <ListItemContent>{nav.name}</ListItemContent>
-                </ListItemButton>
-              </ListItem>
-            </Link>
-          ))}
-        </Stack>
-      </List>
+      {user?.role === "admin" ? (
+        <>
+          <Typography
+            level="body-xs"
+            color="neutral"
+            textTransform={"uppercase"}
+            mt={2}
+          >
+            ADMIN PANEL
+          </Typography>
+          <List size="md" sx={{ mt: 2 }}>
+            <Stack direction={"column"} spacing={1}>
+              {protectedNavigation.map((nav, index) => (
+                <Link href={nav.url} key={index}>
+                  <ListItem>
+                    <ListItemButton
+                      variant="plain"
+                      color="primary"
+                      selected={router.pathname === nav.url}
+                      sx={{ borderRadius: 10, py: 1 }}
+                    >
+                      <ListItemDecorator>{nav.icon}</ListItemDecorator>
+                      <ListItemContent>{nav.name}</ListItemContent>
+                    </ListItemButton>
+                  </ListItem>
+                </Link>
+              ))}
+            </Stack>
+          </List>{" "}
+        </>
+      ) : null}
     </Sheet>
   );
 }

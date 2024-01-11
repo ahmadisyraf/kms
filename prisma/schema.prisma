@@ -17,6 +17,7 @@ model User {
   lastName    String
   email       String        @unique
   image       String
+  role        String?       @default("user")
   application Application[]
 }
 
@@ -51,7 +52,7 @@ model Application {
 
 model Billing {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String?      @db.ObjectId
   amount        Float
   status        String?
@@ -60,15 +61,16 @@ model Billing {
 }
 
 model Promotion {
-  promoid       String       @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  description   String
-  startDate     DateTime?
-  endDate       DateTime?
-  startTime     String?
-  productName   String
-  product       String // product category
-  poster        String?
+  promoid     String    @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  startDate   DateTime?
+  endDate     DateTime?
+  startTime   String?
+  productName String
+  product     String // product category
+  poster      String?
+
   application   Application? @relation(fields: [applicationId], references: [id])
   applicationId String       @db.ObjectId
 }
@@ -78,6 +80,16 @@ model Complaint {
   type          String
   comment       String
   status        String?
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String       @db.ObjectId
+  Workorder     Workorder[]
+}
+
+model Workorder {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  complaint   Complaint? @relation(fields: [complaintId], references: [complaintid])
+  complaintId String     @db.ObjectId
+  assignee    String
+  note        String
+  date        DateTime
 }

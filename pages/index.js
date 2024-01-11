@@ -25,6 +25,7 @@ const Lottie = dynamic(
   }
 );
 import animation from "../public/landing-page.json";
+import Image from "next/image";
 
 export default function Home() {
   const { isSignedIn } = useAuth();
@@ -86,6 +87,13 @@ export default function Home() {
                   lg: "left",
                 }}
               >
+                <Image
+                  src={"/petakom.gif"}
+                  width={70}
+                  height={50}
+                  alt="petakom"
+                />
+
                 <Typography
                   level="h1"
                   color="primary"
