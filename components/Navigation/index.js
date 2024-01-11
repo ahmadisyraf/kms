@@ -3,6 +3,7 @@ import { UserButton, SignedIn, SignedOut, useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect } from "react";
 import { IoMenu } from "react-icons/io5";
+import Image from "next/image";
 
 export default function Navigation() {
   const { isSignedIn } = useAuth();
@@ -31,7 +32,7 @@ export default function Navigation() {
     <Sheet
       variant="outlined"
       color="neutral"
-      sx={{ position: "fixed", width: "100%", zIndex: 1000 , top:0}}
+      sx={{ position: "fixed", width: "100%", zIndex: 1000, top: 0 }}
     >
       <Box
         py={2}
@@ -41,18 +42,29 @@ export default function Navigation() {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {/* <Button
+        <Link href={"/"}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* <Button
             variant="outlined"
             color="neutral"
             sx={{ mr: 1, width: 40, px: 0 }}
           >
             <IoMenu size={23} />
           </Button> */}
-          <Link href={"/"}>
-            <Typography level="h4">KioskMS</Typography>
-          </Link>
-        </Box>
+            <Image src={"/logo.svg"} width={40} height={40} />
+
+            <Typography level="h4" ml={1} mt={0.5}>
+              KioskMS
+            </Typography>
+          </Box>
+        </Link>
+
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>

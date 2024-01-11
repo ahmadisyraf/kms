@@ -10,7 +10,6 @@ import {
   CardOverflow,
   Chip,
   Link,
- 
 } from "@mui/joy";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
@@ -23,6 +22,7 @@ const Lottie = dynamic(
   }
 );
 import animation from "../public/landing-page.json";
+import Image from "next/image";
 
 export default function Home() {
   return (
@@ -54,6 +54,13 @@ export default function Home() {
                   lg: "left",
                 }}
               >
+                <Image
+                  src={"/petakom.gif"}
+                  width={70}
+                  height={50}
+                  alt="petakom"
+                />
+
                 <Typography
                   level="h1"
                   color="primary"
@@ -104,51 +111,51 @@ export default function Home() {
               Hot Promotion
             </Typography>
           </Typography>
+        </Box>
+        <Card sx={{ width: 320, maxWidth: "100%", boxShadow: "lg", mt: 5 }}>
+          <CardOverflow>
+            <AspectRatio sx={{ minWidth: 200 }}>
+              <img
+                src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+                srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+                loading="lazy"
+                alt=""
+              />
+            </AspectRatio>
+          </CardOverflow>
+          <CardContent>
+            <Typography level="body-xs">Kiosk 14</Typography>
+            <Link
+              href="#product-card"
+              fontWeight="md"
+              color="neutral"
+              textColor="text.primary"
+              overlay
+            >
+              Caramel Machiato
+            </Link>
 
-        </Box><Card sx={{ width: 320, maxWidth: '100%', boxShadow: 'lg', mt:5}}>
-      <CardOverflow>
-        <AspectRatio sx={{ minWidth: 200 }}>
-          <img
-            src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
-            srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
-            loading="lazy"
-            alt=""
-          />
-        </AspectRatio>
-      </CardOverflow>
-      <CardContent>
-        <Typography level="body-xs">Kiosk 14</Typography>
-        <Link
-          href="#product-card"
-          fontWeight="md"
-          color="neutral"
-          textColor="text.primary"
-          overlay
-        >
-          Caramel Machiato
-        </Link>
-
-        <Typography
-          level="title-lg"
-          sx={{ mt: 1, fontWeight: 'xl' }}
-          endDecorator={
-            <Chip component="span" size="sm" variant="soft" color="success">
-              Buy 1 Free 1
-            </Chip>
-          }
-        >
-          RM 8.99
-        </Typography>
-        <Typography level="body-sm">
-          (Only <b>3</b> days left!)
-        </Typography>
-      </CardContent>
-      <CardOverflow>
-        <Button variant="solid" color="primary" size="lg">
-          See Promotion
-        </Button>
-      </CardOverflow>
-    </Card>
+            <Typography
+              level="title-lg"
+              sx={{ mt: 1, fontWeight: "xl" }}
+              endDecorator={
+                <Chip component="span" size="sm" variant="soft" color="success">
+                  Buy 1 Free 1
+                </Chip>
+              }
+            >
+              RM 8.99
+            </Typography>
+            <Typography level="body-sm">
+              (Only <b>3</b> days left!)
+            </Typography>
+          </CardContent>
+          <CardOverflow>
+            <Button variant="solid" color="primary" size="lg">
+              See Promotion
+            </Button>
+          </CardOverflow>
+        </Card>
       </Box>
     </>
   );

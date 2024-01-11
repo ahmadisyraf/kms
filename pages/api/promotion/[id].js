@@ -41,7 +41,7 @@ export default async function handle(req = NextRequest, res = NextResponse) {
           description: inputDescription,
           startDate: new Date(inputStartDate),
           endDate: new Date(inputEndDate),
-        //   startTime: inputStartTime,
+          //   startTime: inputStartTime,
           productName: inputProductName,
           product: inputProductCategory,
           application: { connect: { id: id } },
@@ -55,6 +55,23 @@ export default async function handle(req = NextRequest, res = NextResponse) {
       return res.json(postPromotion, { status: 200 });
     } catch (err) {
       res.json({ message: err.message }, { status: 500 });
+    }
+  }
+  if (req.method === "DELETE") {
+    try {
+      const deletePromotion = await prisma.promotion.delete({
+        where: {
+          promoid: id,
+        },
+      });
+
+      if (!deletePromotion) {
+        return res.json({ message: "Something wrong" }, { status: 404 });
+      }
+
+      return res.json({ message: "Promotion deleted" }, { status: 200 });
+    } catch (err) {
+      return res.json({ message: err.message }, { status: 500 });
     }
   }
 }

@@ -80,6 +80,25 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       } catch (error) {
         return res.json(error, { status: 500 });
       }
+    } else if (req.query.filter === "approve") {
+      try {
+        const fetchApplication = await prisma.application.findMany({
+          where: {
+            user: {
+              clerkId: id,
+            },
+            status: "approve"
+          },
+        });
+
+        if (!fetchApplication) {
+          return res.json({ message: "Something wrong" }, { status: 400 });
+        }
+
+        return res.json(fetchApplication, { status: 200 });
+      } catch (err) {
+        return res.json({ message: err.message }, { status: 200 });
+      }
     } else {
       try {
         const findUser = await prisma.user.findUnique({
@@ -106,10 +125,9 @@ export default async function handler(req = NextRequest, res = NextResponse) {
         return res.json({ error: error.message }, { status: 500 });
       }
     }
-  }
-  if (req.method === "PATCH") {
+  } else if (req.method === "PATCH") {
     const { inputStatus } = req.body;
-    
+
     try {
       const updateStatus = await prisma.application.update({
         where: {
@@ -127,6 +145,22 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       return res.json(updateStatus, { status: 200 });
     } catch (err) {
       return res.json({ error: error.message }, { status: 500 });
+    }
+  } else if (req.method === "DELETE") {
+    try {
+      const deleteApplication = await prisma.application.delete({
+        where: {
+          id: id,
+        },
+      });
+
+      if (!deleteApplication) {
+        return res.json({ message: "Something wrong" }, { status: 404 });
+      }
+
+      return res.json({ message: "Application deleted" }, { status: 200 });
+    } catch (err) {
+      return res.json({ message: err.message }, { status: 500 });
     }
   }
 }

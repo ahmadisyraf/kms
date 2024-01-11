@@ -1,5 +1,5 @@
 import DashboardLayout from "@/layouts/dashboard";
-import { Box, Sheet, Typography, Button } from "@mui/joy";
+import { Box, Sheet, Typography, Button, Breadcrumbs } from "@mui/joy";
 import { useState, useEffect } from "react";
 import Loader from "@/components/Loader";
 import dynamic from "next/dynamic";
@@ -16,18 +16,64 @@ import { IoIosAdd } from "react-icons/io";
 import { loadStripe } from "@stripe/stripe-js";
 import toast from "react-hot-toast";
 import { useAuth } from "@clerk/nextjs";
+import BillingTable from "@/screens/billing/user/billing-table";
 export default function ViewBillingPages() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [email, setEmail] = useState();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
   const [billing, setBilling] = useState([]);
+  const [applicationId, setApplicationId] = useState();
 
-  console.log(billing, "...ini bill");
+  // const fetchApplicationId = async () => {
+  //   try {
+  //     // Get approve application
+  //     const getApplication = await fetch(
+  //       "/api/application?filter=true&status=approve",
+  //       {
+  //         method: "GET",
+  //       }
+  //     );
+
+  //     if (!getApplication.ok) {
+  //       toast.error("Something wrong please contact our support");
+  //     }
+
+  //     const application = await getApplication.json();
+
+  //     setApplicationId(application[0].id);
+  //     console.log(applicationId);
+  //   } catch (err) {
+  //     toast.error("Something wrong, please contact our support");
+  //   }
+  // };
+
+  const fetchApplicationId = async () => {
+    try {
+      // Get approve application
+      const getApplication = await fetch(
+        `/api/application/${userId}?filter=approve`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!getApplication.ok) {
+        toast.error("Something wrong please contact our support");
+      }
+
+      const application = await getApplication.json();
+
+      setApplicationId(application[0].id);
+    } catch (err) {
+      toast.error("Something wrong, please contact our support");
+    }
+  };
 
   const fetchBilling = async () => {
     try {
-      const dbData = await fetch(`/api/billing/${"6582970981db07df46dba0ac"}`, {
+      setIsLoading(true);
+      const dbData = await fetch(`/api/billing/${applicationId}`, {
         method: "GET",
       });
 
@@ -38,6 +84,10 @@ export default function ViewBillingPages() {
       const data = await dbData.json();
 
       setBilling(data);
+
+      console.log(data, "..billing");
+
+      setIsLoading(false);
     } catch (err) {
       toast.error(err.message);
     }
@@ -45,9 +95,12 @@ export default function ViewBillingPages() {
 
   useEffect(() => {
     if (isSignedIn) {
-      fetchBilling();
+      fetchApplicationId();
+      if (applicationId) {
+        fetchBilling();
+      }
     }
-  }, [isSignedIn]);
+  }, [isSignedIn, applicationId]);
 
   const fetchUser = async () => {
     const currentUser = await fetch("/api/user/", {
@@ -145,10 +198,19 @@ export default function ViewBillingPages() {
     }
   };
 
+  const breadcrumbs = [
+    {
+      name: "Dashboard",
+      link: "/kiosk-application/user",
+    },
+    { name: "Billing", link: "/billing/user/" },
+  ];
+
   return (
     <DashboardLayout>
       <Box sx={{ mt: 10 }}>
-        <Typography level="h2">{billing[0]?.application.id}</Typography>
+        <CustomBreadcrumbs breadcrumbs={breadcrumbs} />
+        <Typography level="h2">Billing</Typography>
         <Box sx={{ display: "flex", flexDirection: "row-reverse", mt: 5 }}>
           <Button
             sx={{ mr: 1 }}
@@ -176,14 +238,20 @@ export default function ViewBillingPages() {
           {isLoading ? (
             <Loader />
           ) : (
-            <Box>
-              <Box sx={{ position: "relative", width: 300 }}>
-                <Lottie animationData={animation} loop={true} />
-                <Typography level="h3" textAlign={"center"}>
-                  No billing found
-                </Typography>
-              </Box>
-            </Box>
+            <>
+              {billing ? (
+                <BillingTable billing={billing} />
+              ) : (
+                <Box>
+                  <Box sx={{ position: "relative", width: 300 }}>
+                    <Lottie animationData={animation} loop={true} />
+                    <Typography level="h3" textAlign={"center"}>
+                      No billing found
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
+            </>
           )}
         </Sheet>
       </Box>
