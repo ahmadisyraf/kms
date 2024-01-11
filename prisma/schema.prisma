@@ -50,7 +50,7 @@ model Application {
 
 model Billing {
   id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String?      @db.ObjectId
   amount        Float
   status        String?
@@ -67,7 +67,7 @@ model Promotion {
   startTime     String?
   productName   String
   product       String // product category
-  poster        String? 
-  application   Application? @relation(fields: [applicationId], references: [id])
+  poster        String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String       @db.ObjectId
 }
