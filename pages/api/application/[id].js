@@ -80,23 +80,22 @@ export default async function handler(req = NextRequest, res = NextResponse) {
       } catch (error) {
         return res.json(error, { status: 500 });
       }
-    } else if (req.query.search) {
-      const search = req.query.search;
-
+    } else if (req.query.filter === "approve") {
       try {
-        const searchApplication = await prisma.application.findMany({
+        const fetchApplication = await prisma.application.findMany({
           where: {
-            status: {
-              contains: search,
+            user: {
+              clerkId: id,
             },
+            status: "approve"
           },
         });
 
-        if (!searchApplication) {
-          res.json({ message: "Something wrong" }, { status: 400 });
+        if (!fetchApplication) {
+          return res.json({ message: "Something wrong" }, { status: 400 });
         }
 
-        return res.json(searchApplication, { status: 200 });
+        return res.json(fetchApplication, { status: 200 });
       } catch (err) {
         return res.json({ message: err.message }, { status: 200 });
       }

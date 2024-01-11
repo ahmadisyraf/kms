@@ -21,15 +21,38 @@ export default function ViewBillingPages() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [email, setEmail] = useState();
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
   const [billing, setBilling] = useState([]);
   const [applicationId, setApplicationId] = useState();
+
+  // const fetchApplicationId = async () => {
+  //   try {
+  //     // Get approve application
+  //     const getApplication = await fetch(
+  //       "/api/application?filter=true&status=approve",
+  //       {
+  //         method: "GET",
+  //       }
+  //     );
+
+  //     if (!getApplication.ok) {
+  //       toast.error("Something wrong please contact our support");
+  //     }
+
+  //     const application = await getApplication.json();
+
+  //     setApplicationId(application[0].id);
+  //     console.log(applicationId);
+  //   } catch (err) {
+  //     toast.error("Something wrong, please contact our support");
+  //   }
+  // };
 
   const fetchApplicationId = async () => {
     try {
       // Get approve application
       const getApplication = await fetch(
-        "/api/application?filter=true&status=approve",
+        `/api/application/${userId}?filter=approve`,
         {
           method: "GET",
         }
@@ -42,7 +65,6 @@ export default function ViewBillingPages() {
       const application = await getApplication.json();
 
       setApplicationId(application[0].id);
-      console.log(applicationId);
     } catch (err) {
       toast.error("Something wrong, please contact our support");
     }
