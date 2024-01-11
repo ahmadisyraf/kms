@@ -17,6 +17,7 @@ model User {
   lastName    String
   email       String        @unique
   image       String
+  role        String?       @default("user")
   application Application[]
 }
 

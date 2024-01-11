@@ -42,19 +42,29 @@ export default function Navigation() {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          {/* <Button
+        <Link href={"/"}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* <Button
             variant="outlined"
             color="neutral"
             sx={{ mr: 1, width: 40, px: 0 }}
           >
             <IoMenu size={23} />
           </Button> */}
+            <Image src={"/logo.svg"} width={40} height={40} />
 
-          <Link href={"/"}>
-            <Typography level="h4">KioskMS</Typography>
-          </Link>
-        </Box>
+            <Typography level="h4" ml={1} mt={0.5}>
+              KioskMS
+            </Typography>
+          </Box>
+        </Link>
+
         <SignedIn>
           <UserButton afterSignOutUrl="/" />
         </SignedIn>
