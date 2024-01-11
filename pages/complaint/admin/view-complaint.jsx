@@ -2,6 +2,7 @@ import Button from "@mui/joy/Button";
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from 'next/router';
 import {
   Typography,
   Input,
@@ -18,12 +19,18 @@ import {
   MenuButton,
   MenuItem,
   Switch,
+  Alert,
 } from "@mui/joy";
 import DashboardLayout from "@/layouts/dashboard";
 import { MoreVert, Add, KeyboardArrowRight } from "@mui/icons-material";
 import Link from "next/link";
 
 export default function CreateComplaint() {
+    const handleClick = () => {
+        router.push('/complaint/admin/details-complaint');
+      };
+  const router = useRouter();
+  const [variant, setVariant] = React.useState("solid");
   const handleDelete = async (complaintid) => {
     try {
       const loadingToast = toast.loading("Loading, please wait");
@@ -90,13 +97,6 @@ export default function CreateComplaint() {
         <Typography level="h1" color="secondary" fontSize={35} sx={{ mt: 15 }}>
           Kiosk Complaint
         </Typography>
-        <Box sx={{ display: "flex", flexDirection: "row-reverse" }}>
-          <Link href="/complaint/user/create-complaint">
-            <Button sx={{ ml: 150, mt: 1.5 }} startDecorator={<Add />}>
-              New Complaint
-            </Button>
-          </Link>
-        </Box>
         <Card size="lg" sx={{ mt: 2 }}>
           <Table aria-label="basic table">
             <thead>
@@ -116,15 +116,24 @@ export default function CreateComplaint() {
                   <td>{d.type}</td>
                   <td>{d.applicationId}</td>
                   <td>{d.comment}</td>
-                  <td sx={{ width: "100%" }}>On Hold</td>
-                  <td>
-                    {" "}
-                    <Button sx={{ mr: 0.2 }} color="primary" variant="plain">
+                  <td sx={{ width: "20%" }}>
+                    <Alert variant={variant} color="primary">
+                      Pending
+                    </Alert>
+                  </td>
+                  <td >
+                    
+                    <Button onClick={handleClick}  sx={{ mr: 0.2 }} color="primary" variant="plain" >
                       View
-                    </Button>
-                    <Button sx={{ mr: 0.2 }} variant="plain" color="danger" onClick={() => handleDelete(d.complaintid)}>
-                      Delete
                       
+                    </Button>
+                    <Button
+                      sx={{ mr: 0.2 }}
+                      variant="plain"
+                      color="danger"
+                      onClick={() => handleDelete(d.complaintid)}
+                    >
+                      Delete
                     </Button>
                   </td>
                 </tr>

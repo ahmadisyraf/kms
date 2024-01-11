@@ -115,7 +115,7 @@ export default function CreateComplaint() {
         console.log(complaint);
         toast.success("Complaint saved");
 
-        router.push('/complaint/user/view-complaint'); // Change '/list-complaint' to the actual URL of your list-complaint page
+        router.push('/complaint/user/list-complaint'); // Change '/list-complaint' to the actual URL of your list-complaint page
       }
     } catch (err) {
       console.log(err)
@@ -149,39 +149,25 @@ export default function CreateComplaint() {
         </Typography>
         <Box>
           <Card sx={{ mt: 2 }} component={"form"} onSubmit={handleSubmit(onSubmit)}>
-            <FormControl error={errors?.inputType}>
+          <FormControl>
               <FormLabel sx={{ my: 1 }}>Complaint type :</FormLabel>
-              <Select
-                placeholder="Select a type"
-                {...register("inputType")}
-                indicator={<KeyboardArrowDown />}
-                sx={{
-                  [`& .${selectClasses.indicator}`]: {
-                    transition: "0.2s",
-                    [`&.${selectClasses.expanded}`]: {
-                      transform: "rotate(-180deg)",
-                    },
-                  },
-                }}
-              >
-                <Option value="cleanliness">Cleanliness</Option>
-                <Option value="fooddrink">Food&Drink</Option>
-                <Option value="facility">Facility</Option>
-                <Option value="other">Other</Option>
-              </Select>
-              <FormHelperText>{errors?.inputType?.message}</FormHelperText>
+              <Input
+                value="Facility"
+              />
+              <FormHelperText>
+              </FormHelperText>
             </FormControl>
             <FormControl error={errors?.inputComment}>
               <FormLabel sx={{ my: 1 }}>Comment :</FormLabel>
               <Textarea
                 name="Size"
-                placeholder="Do not miss your chance"
+                value="Do not miss your chance"
                 {...register("inputComment")}
                 minRows={4}
               />
               <FormHelperText>{errors?.inputComment?.message}</FormHelperText>
             </FormControl>
-            <Button type="submit">Submit</Button>
+            <Button type="submit">Back</Button>
           </Card>
         </Box>
       </Box>

@@ -10,10 +10,12 @@ import {
   CardOverflow,
   Chip,
   Link,
- 
 } from "@mui/joy";
 import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const Lottie = dynamic(
   () => import("lottie-react").then((module) => module.default),
@@ -25,6 +27,36 @@ const Lottie = dynamic(
 import animation from "../public/landing-page.json";
 
 export default function Home() {
+  const { isSignedIn } = useAuth();
+  const [promotion, setPromotion] = useState([]);
+  const [checked, setChecked] = useState(false);
+
+  console.log(promotion, "ini bill");
+
+  const fetchPromotion = async () => {
+    try {
+      const dbData = await fetch("/api/mainpage", {
+        method: "GET",
+      });
+
+      if (!dbData.ok) {
+        toast.error("Something went wrong! Please contact our support.");
+      }
+
+      const data = await dbData.json();
+      console.log(data, "..promo");
+      setPromotion(data);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      fetchPromotion();
+    }
+  }, [isSignedIn]);
+
   return (
     <>
       <Box
@@ -104,51 +136,56 @@ export default function Home() {
               Hot Promotion
             </Typography>
           </Typography>
+        </Box>
+        <Grid container spacing={1} md={{ flexGrow: 1 }}>
+          {promotion.map((d, index) => (
+            <Grid lg={3}>
+              <Card
+                sx={{ width: 320, maxWidth: "100%", boxShadow: "lg", mt: 5 }}
+                key={index}
+              >
+                <CardOverflow>
+                  <AspectRatio sx={{ minWidth: 200 }}>
+                    <img src="https://img.freepik.com/free-vector/americano-cappuccino-coffee-poster-discount-template-modern-watercolor-illustration_83728-540.jpg?size=626&ext=jpg&ga=GA1.1.2121922902.1704953295&semt=ais" />
+                  </AspectRatio>
+                </CardOverflow>
+                <CardContent>
+                  <Typography level="body-xs"></Typography>
+                  <Link
+                    href="#product-card"
+                    fontWeight="md"
+                    color="neutral"
+                    textColor="text.primary"
+                    overlay
+                  >
+                    {d.productName}
+                  </Link>
 
-        </Box><Card sx={{ width: 320, maxWidth: '100%', boxShadow: 'lg', mt:5}}>
-      <CardOverflow>
-        <AspectRatio sx={{ minWidth: 200 }}>
-          <img
-            src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
-            srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
-            loading="lazy"
-            alt=""
-          />
-        </AspectRatio>
-      </CardOverflow>
-      <CardContent>
-        <Typography level="body-xs">Kiosk 14</Typography>
-        <Link
-          href="#product-card"
-          fontWeight="md"
-          color="neutral"
-          textColor="text.primary"
-          overlay
-        >
-          Caramel Machiato
-        </Link>
-
-        <Typography
-          level="title-lg"
-          sx={{ mt: 1, fontWeight: 'xl' }}
-          endDecorator={
-            <Chip component="span" size="sm" variant="soft" color="success">
-              Buy 1 Free 1
-            </Chip>
-          }
-        >
-          RM 8.99
-        </Typography>
-        <Typography level="body-sm">
-          (Only <b>3</b> days left!)
-        </Typography>
-      </CardContent>
-      <CardOverflow>
-        <Button variant="solid" color="primary" size="lg">
-          See Promotion
-        </Button>
-      </CardOverflow>
-    </Card>
+                  <Typography
+                    level="title-lg"
+                    sx={{ mt: 1, fontWeight: "xl" }}
+                    endDecorator={
+                      <Chip
+                        component="span"
+                        size="sm"
+                        variant="soft"
+                        color="success"
+                      >
+                        {d.product}
+                      </Chip>
+                    }
+                  >
+                    {d.title}
+                  </Typography>
+                  <Typography level="body-sm">
+                  ( Promotion until {new Date(d.endDate).toLocaleDateString("en-GB")}
+ )
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
     </>
   );

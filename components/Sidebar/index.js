@@ -31,12 +31,12 @@ const navigations = [
   {
     name: "Promotion",
     icon: <BiSolidDiscount size={18} />,
-    url: "/promotion/user/list-promotion",
+    url: "/promotion/user/view-promotion",
   },
   {
     name: "Complaint",
     icon: <TbReport size={18} />,
-    url: "/complaint/user/list-complaint",
+    url: "/complaint/user/view-complaint",
   },
 ];
 
@@ -45,6 +45,11 @@ const protectedNavigation = [
     name: "Kiosk application",
     icon: <FaShop size={18} />,
     url: "/kiosk-application/admin/view-application",
+  },
+  {
+    name: "Complaint",
+    icon: <TbReport size={18} />,
+    url: "/complaint/admin/view-complaint",
   },
 ];
 
