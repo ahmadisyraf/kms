@@ -95,7 +95,7 @@ export default function CreatePromotion() {
       if(promotion)
       toast.success("Promotion saved");
 
-      router.push('/promotion/user/list-promotion'); // Change '/list-complaint' to the actual URL of your list-complaint page
+      router.push('/promotion/user/view-promotion'); // Change '/list-complaint' to the actual URL of your list-complaint page
       
     
     }
