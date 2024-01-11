@@ -47,6 +47,7 @@ model Application {
   createdDate DateTime
   billing     Billing[]
   promotion   Promotion[]
+  Complaint   Complaint[]
 }
 
 model Billing {
@@ -69,6 +70,16 @@ model Promotion {
   productName   String
   product       String // product category
   poster        String?
+
+  application   Application? @relation(fields: [applicationId], references: [id])
+  applicationId String       @db.ObjectId
+}
+
+model Complaint {
+  complaintid   String       @id @default(auto()) @map("_id") @db.ObjectId
+  type          String
+  comment       String
+  status        String?
   application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   applicationId String       @db.ObjectId
 }
