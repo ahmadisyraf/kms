@@ -185,7 +185,7 @@ export default function WorkOrderScreen() {
                               variant="outlined"
                               size="sm"
                               sx={{ ml: 1 }}
-                              onClick={() => router.push(`/work-order/${d.id}`)}
+                              onClick={() => router.push(`/work-order/view-work-order/${d.id}`)}
                             >
                               <FaEye style={{ fontSize: 20 }} />
                             </IconButton>
