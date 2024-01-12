@@ -154,7 +154,7 @@ export default function Home() {
               >
                 <CardOverflow>
                   <AspectRatio sx={{ minWidth: 200 }}>
-                    <img src="https://img.freepik.com/free-vector/americano-cappuccino-coffee-poster-discount-template-modern-watercolor-illustration_83728-540.jpg?size=626&ext=jpg&ga=GA1.1.2121922902.1704953295&semt=ais" />
+                    <img src={d.poster} />
                   </AspectRatio>
                 </CardOverflow>
                 <CardContent>
