@@ -5,7 +5,15 @@ const prisma = new PrismaClient();
 export default async function handler(req = NextRequest, res = NextResponse) {
   if (req.method === "GET") {
     try {
-      const getComplaint = await prisma.complaint.findMany();
+      const getComplaint = await prisma.complaint.findMany({
+        include: {
+          application: {
+            include: {
+              business: true // Include business details
+            }
+          }
+        }
+      });
 
       return res.json(getComplaint, { status: 200 });
     } catch (error) {

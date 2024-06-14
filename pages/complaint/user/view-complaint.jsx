@@ -104,9 +104,9 @@ export default function CreateComplaint() {
           <Table aria-label="basic table">
             <thead>
               <tr>
-                <th>Complaint ID</th>
+                <th>No</th>
                 <th>Complaint Type</th>
-                <th>Application Id</th>
+                <th>Application Bussiness</th>
                 <th>Comment</th>
                 <th>Status</th>
                 <th>Action</th>
@@ -115,9 +115,9 @@ export default function CreateComplaint() {
             <tbody>
               {complaint.map((d, index) => (
                 <tr key={index}>
-                  <td>{d.complaintid}</td>
+                  <td>{index + 1}</td>
                   <td>{d.type}</td>
-                  <td>{d.applicationId}</td>
+                  <td>{d.application.business.name}</td>
                   <td>{d.comment}</td>
                   <td><Box sx={{ display: "flex", alignItems: "center" }}>
                 <Sheet
