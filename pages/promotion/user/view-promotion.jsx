@@ -1,58 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Button from "@mui/joy/Button";
-
 import { useAuth } from "@clerk/nextjs";
 import {
   Typography,
   Box,
   Card,
   Table,
-  Switch,
-  IconButton,
-  Dropdown,
-  Menu,
-  MenuButton,
-  MenuItem,
 } from "@mui/joy";
-import { Add, MoreVert } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import DashboardLayout from "@/layouts/dashboard";
 
 export default function CreatePromotion() {
-  const handleDelete = async (promoid) => {
-    try {
-      const loadingToast = toast.loading("Loading, please wait");
-      const deletePromotion = await fetch(`/api/promotion/${promoid}`, {
-        method: "DELETE",
-      });
-
-      if (!deletePromotion.ok) {
-        toast.error("Something wrong, please contact our support", {
-          id: loadingToast,
-        });
-      } else if (deletePromotion.ok) {
-        toast.success(`Promotion: ${promoid} deleted`, {
-          id: loadingToast,
-        });
-
-        // router.reload();
-        const deleted = await deletePromotion.json();
-
-        console.log(deleted, "..hehe");
-      }
-    } catch (err) {
-      toast.error("Something wrong, please contact our support", {
-        id: loadingToast,
-      });
-    }
-  };
-
   const { isSignedIn } = useAuth();
   const [promotion, setPromotion] = useState([]);
-  const [checked, setChecked] = useState(false);
-
-  console.log(promotion, "ini bill");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchPromotion = async () => {
     try {
@@ -63,8 +26,8 @@ export default function CreatePromotion() {
         }
       );
 
-      if (!dbData) {
-        toast.error("Something went wrong! Please contact our support.");
+      if (!dbData.ok) {
+        throw new Error("Something went wrong! Please contact our support.");
       }
 
       const data = await dbData.json();
@@ -81,6 +44,19 @@ export default function CreatePromotion() {
     }
   }, [isSignedIn]);
 
+  // Function to handle search query change
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Function to filter promotions based on search query
+  const filteredPromotions = promotion.filter((promo) => {
+    const searchTerms = Object.values(promo).map((value) =>
+      String(value).toLowerCase()
+    );
+    return searchTerms.some((term) => term.includes(searchQuery.toLowerCase()));
+  });
+
   return (
     <DashboardLayout>
       <Box>
@@ -95,6 +71,15 @@ export default function CreatePromotion() {
           </Link>
         </Box>
         <Card size="lg" sx={{ mt: 2 }}>
+          <Box sx={{ p: 2 }}>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              placeholder="Search promotions"
+              style={{ width: "100%", padding: "8px", marginBottom: "16px" }}
+            />
+          </Box>
           <Table aria-label="basic table">
             <thead>
               <tr>
@@ -107,14 +92,25 @@ export default function CreatePromotion() {
               </tr>
             </thead>
             <tbody>
-              {promotion.map((d, index) => (
+              {filteredPromotions.map((d, index) => (
                 <tr key={index}>
                   <td>{d.promoid}</td>
                   <td>{d.title}</td>
                   <td>{d.startDate}</td>
                   <td>On</td>
-                  <td sx={{ width:"100%"}}>{d.productName}</td>
-                  <td >   <Button sx={{ mr: 0.2}} color="primary"variant="soft">View</Button><Button sx={{ mr: 0.2}} variant="soft"color="danger" onClick={() => handleDelete(d.promoid)}>Delete</Button></td>
+                  <td>{d.productName}</td>
+                  <td>
+                    <Button color="primary" variant="soft">
+                      View
+                    </Button>
+                    <Button
+                      variant="soft"
+                      color="danger"
+                      onClick={() => handleDelete(d.promoid)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
